@@ -1,5 +1,6 @@
 plugins {
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("org.sonarqube") version "3.3"
     id("org.springframework.boot") version "2.5.6"
     java
     `maven-publish`
@@ -44,4 +45,11 @@ tasks.withType<GenerateMavenPom>().configureEach {
 }
 tasks.register("pom") {
     dependsOn("generatePomFileForMavenPublication")
+}
+
+// set up sonarqube
+sonarqube {
+    properties {
+        property("sonar.projectkey", "caffplacc-backend")
+    }
 }
