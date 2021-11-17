@@ -1,5 +1,6 @@
-package hu.bme.szgbizt.levendula.caffplacc.service;
+package hu.bme.szgbizt.levendula.caffplacc;
 
+import hu.bme.szgbizt.levendula.caffplacc.service.HelloService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

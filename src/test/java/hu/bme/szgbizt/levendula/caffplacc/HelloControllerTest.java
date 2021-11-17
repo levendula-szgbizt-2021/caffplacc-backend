@@ -1,5 +1,6 @@
-package hu.bme.szgbizt.levendula.caffplacc.controller;
+package hu.bme.szgbizt.levendula.caffplacc;
 
+import hu.bme.szgbizt.levendula.caffplacc.presentation.HelloController;
 import hu.bme.szgbizt.levendula.caffplacc.service.HelloService;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;

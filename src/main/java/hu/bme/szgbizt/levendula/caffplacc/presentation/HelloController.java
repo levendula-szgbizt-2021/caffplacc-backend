@@ -1,4 +1,4 @@
-package hu.bme.szgbizt.levendula.caffplacc.controller;
+package hu.bme.szgbizt.levendula.caffplacc.presentation;
 
 import hu.bme.szgbizt.levendula.caffplacc.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
