@@ -1,4 +1,4 @@
-package hu.bme.szgbizt.levendula.caffplacc;
+package hu.bme.szgbizt.levendula.caffplacc.login;
 
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import org.springframework.http.ResponseEntity;

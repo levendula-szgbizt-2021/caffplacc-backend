@@ -1,9 +1,9 @@
 package hu.bme.szgbizt.levendula.caffplacc.security;
 
-import hu.bme.szgbizt.levendula.caffplacc.JwtRequest;
-import hu.bme.szgbizt.levendula.caffplacc.JwtResponse;
-import hu.bme.szgbizt.levendula.caffplacc.UserAuthIF;
-import hu.bme.szgbizt.levendula.caffplacc.UserDto;
+import hu.bme.szgbizt.levendula.caffplacc.login.JwtRequest;
+import hu.bme.szgbizt.levendula.caffplacc.login.JwtResponse;
+import hu.bme.szgbizt.levendula.caffplacc.login.UserAuthIF;
+import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

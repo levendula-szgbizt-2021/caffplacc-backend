@@ -22,9 +22,9 @@ public class Animation {
     UUID id;
     UUID userId;
     double fileSizeInMb;
-    String sha512Hash;
+    String hash;
     Instant uploadDate;
     String title;
     @OneToMany
-    List<hu.bme.szgbizt.levendula.caffplacc.data.entity.Comment> comments;
+    List<Comment> comments;
 }

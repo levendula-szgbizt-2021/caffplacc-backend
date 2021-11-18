@@ -1,4 +1,4 @@
-package hu.bme.szgbizt.levendula.caffplacc;
+package hu.bme.szgbizt.levendula.caffplacc.login;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

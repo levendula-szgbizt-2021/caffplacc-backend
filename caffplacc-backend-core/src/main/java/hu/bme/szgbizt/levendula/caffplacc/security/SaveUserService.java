@@ -1,6 +1,6 @@
 package hu.bme.szgbizt.levendula.caffplacc.security;
 
-import hu.bme.szgbizt.levendula.caffplacc.UserDto;
+import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
