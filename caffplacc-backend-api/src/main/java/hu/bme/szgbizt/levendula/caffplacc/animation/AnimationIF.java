@@ -29,9 +29,9 @@ public interface AnimationIF {
 
     @ApiOperation(value = "previewAnimation", notes = "")
     @GetMapping("/{id}/preview")
-    void changeAvailabilityOfSurvey(@PathVariable String id);
+    void previewAnimation(@PathVariable String id);
 
     @ApiOperation(value = "downloadAnimation", notes = "")
     @GetMapping("/{id}/download")
-    void finalizeSurvey(@PathVariable String id);
+    void downloadAnimation(@PathVariable String id);
 }
