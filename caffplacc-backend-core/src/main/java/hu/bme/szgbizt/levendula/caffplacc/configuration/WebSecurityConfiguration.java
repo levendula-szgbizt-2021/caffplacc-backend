@@ -60,7 +60,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/login", "/register").permitAll()
                 .antMatchers("/oauth2/**", "/swagger-resources/**", "/swagger-ui/**", "/swagger**", "/webjars/springfox-swagger-ui/**", "/v2/api-docs**", "/**/v2/api-docs").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/survey/**").permitAll()
+                .antMatchers("/api/anim/**").permitAll()
                 // all other requests need to be authenticated
                 .anyRequest().authenticated().and()
                 // make sure we use stateless session; session won't be used to

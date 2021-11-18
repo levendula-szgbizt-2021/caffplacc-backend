@@ -9,10 +9,10 @@ spring:
     password: password
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
   liquibase:
-    enabled: true
+    enabled: false
     change-log: classpath:migration/liquibase-changelog.xml

@@ -15,7 +15,7 @@ public class ApiDocsConfiguration {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("hu.aut.szoftarch.surveymanager"))
+                .apis(RequestHandlerSelectors.basePackage("hu.bme.szgbizt.levendula.caffplacc"))
                 .paths(PathSelectors.any())
                 .build();
     }
