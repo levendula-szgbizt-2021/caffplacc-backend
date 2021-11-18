@@ -25,6 +25,8 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+.h2data
+h2data
 
 ### NetBeans ###
 /nbproject/private/
@@ -36,5 +38,3 @@ out/
 ### VS Code ###
 .vscode/
 
-### Generated ###
-pom.xml

@@ -1,0 +1,6 @@
+hu\bme\szgbizt\levendula\caffplacc\JwtResponse.class
+hu\bme\szgbizt\levendula\caffplacc\UserAuthIF.class
+hu\bme\szgbizt\levendula\caffplacc\exception\CaffplaccError.class
+hu\bme\szgbizt\levendula\caffplacc\exception\CaffplaccException.class
+hu\bme\szgbizt\levendula\caffplacc\UserDto.class
+hu\bme\szgbizt\levendula\caffplacc\JwtRequest.class
