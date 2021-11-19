@@ -26,8 +26,8 @@ public class AnimationService {
         this.mapper = mapper;
     }
 
-    public Page<AnimationResponse> listAnimations(AnimationFilterRequest request, Pageable pageable) {
-        return animationRepository.findAll(pageable).map(mapper::map);
+    public Page<AnimationResponse> listAnimations(String title, Pageable pageable) {
+        return animationRepository.findAllByTitleContains(title, pageable).map(mapper::map);
     }
 
     public AnimationDetailedResponse getOneAnimation(UUID id) {

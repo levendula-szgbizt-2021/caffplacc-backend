@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 public interface AnimationIF {
     @ApiOperation(value = "listAnimations", produces = MediaType.APPLICATION_JSON_VALUE, notes = "")
     @GetMapping
-    Page<AnimationResponse> listAnimations(AnimationFilterRequest request, Pageable pageable);
+    Page<AnimationResponse> listAnimations(@RequestParam("query") String query, Pageable pageable);
 
     @ApiOperation(value = "getOneAnimation", produces = MediaType.APPLICATION_JSON_VALUE, notes = "")
     @GetMapping("/{id}")
