@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -19,7 +19,7 @@ public class AnimationDetailedResponse {
     String uploaderUserName;
     double fileSizeInMb;
     String hash;
-    LocalDateTime uploadDate;
+    Instant uploadDate;
     String title;
     List<CommentResponse> comments;
 }

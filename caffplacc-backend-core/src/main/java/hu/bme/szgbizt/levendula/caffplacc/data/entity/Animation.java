@@ -21,6 +21,7 @@ public class Animation {
     @Id
     UUID id;
     UUID userId;
+    String uploaderUserName;
     double fileSizeInMb;
     String hash;
     Instant uploadDate;

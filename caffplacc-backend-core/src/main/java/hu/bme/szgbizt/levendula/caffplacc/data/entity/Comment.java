@@ -20,6 +20,7 @@ public class Comment {
     @Id
     UUID id;
     UUID userId;
+    String userName;
     String content;
     Instant date;
     @ManyToOne
