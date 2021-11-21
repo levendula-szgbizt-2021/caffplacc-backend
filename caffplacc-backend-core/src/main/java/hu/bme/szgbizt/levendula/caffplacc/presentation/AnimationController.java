@@ -5,6 +5,7 @@ import hu.bme.szgbizt.levendula.caffplacc.service.AnimationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -32,7 +33,7 @@ public class AnimationController implements AnimationIF {
 
     @Override
     @PostMapping
-    public AnimationResponse createAnimation(@RequestBody AnimationCreateRequest request) {
+    public AnimationResponse createAnimation(@RequestBody AnimationCreateRequest request, @RequestParam("file") MultipartFile file) {
         return service.createAnimation(request);
     }
 

@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface AnimationIF {
     @ApiOperation(value = "listAnimations", produces = MediaType.APPLICATION_JSON_VALUE, notes = "")
@@ -17,7 +18,7 @@ public interface AnimationIF {
 
     @ApiOperation(value = "createSurvey", produces = MediaType.APPLICATION_JSON_VALUE, notes = "")
     @PostMapping
-    AnimationResponse createAnimation(@RequestBody AnimationCreateRequest request);
+    AnimationResponse createAnimation(@RequestBody AnimationCreateRequest request, @RequestParam("file") MultipartFile file);
 
     @ApiOperation(value = "updateSurvey", produces = MediaType.APPLICATION_JSON_VALUE, notes = "")
     @PutMapping("/{id}")
