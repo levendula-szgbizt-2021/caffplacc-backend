@@ -39,7 +39,7 @@
             <column name="CAFF_USER_ID" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="ROLES" type="INT"/>
+            <column name="ROLES" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="Radakxx (generated)" id="1637489345696-5">

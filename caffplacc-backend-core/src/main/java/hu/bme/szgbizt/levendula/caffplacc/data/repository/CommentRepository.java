@@ -8,5 +8,7 @@ import java.util.UUID;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, UUID> {
+
     void deleteAllByAnimationId(UUID id);
+    void deleteAllByUserId(UUID id);
 }

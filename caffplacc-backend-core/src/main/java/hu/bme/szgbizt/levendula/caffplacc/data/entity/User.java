@@ -25,6 +25,7 @@ public class User {
     @JsonIgnore
     String password;
     @ElementCollection
-    List<hu.bme.szgbizt.levendula.caffplacc.data.entity.UserRole> roles;
+    @Enumerated(value = EnumType.STRING)
+    List<UserRole> roles;
 }
 

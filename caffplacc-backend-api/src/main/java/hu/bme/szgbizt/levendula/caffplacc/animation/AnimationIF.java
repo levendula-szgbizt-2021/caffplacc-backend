@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface AnimationIF {
+
     @ApiOperation(value = "listAnimations", produces = MediaType.APPLICATION_JSON_VALUE, notes = "")
     @GetMapping
     Page<AnimationResponse> listAnimations(@RequestParam("query") String query, Pageable pageable);

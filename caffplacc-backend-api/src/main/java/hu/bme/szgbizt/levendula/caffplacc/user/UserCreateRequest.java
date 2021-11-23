@@ -1,4 +1,4 @@
-package hu.bme.szgbizt.levendula.caffplacc.login;
+package hu.bme.szgbizt.levendula.caffplacc.user;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserDto {
-
+public class UserCreateRequest {
     String username;
     String password;
+    boolean admin;
 }
