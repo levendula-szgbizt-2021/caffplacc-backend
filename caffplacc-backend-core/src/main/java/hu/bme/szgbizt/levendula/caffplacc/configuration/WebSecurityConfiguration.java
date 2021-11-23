@@ -57,7 +57,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         // We don't need CSRF for this example
         httpSecurity.csrf().disable()
                 // dont authenticate this particular request
-                .authorizeRequests().antMatchers("/login", "/register").permitAll()
+                .authorizeRequests().antMatchers("/login", "/register", "/refresh").permitAll()
                 .antMatchers("/oauth2/**", "/swagger-resources/**", "/swagger-ui/**", "/swagger**", "/webjars/springfox-swagger-ui/**", "/v2/api-docs**", "/**/v2/api-docs").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/anim/**").permitAll()

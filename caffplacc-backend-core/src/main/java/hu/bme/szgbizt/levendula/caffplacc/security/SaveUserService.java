@@ -4,6 +4,7 @@ import hu.bme.szgbizt.levendula.caffplacc.data.entity.UserRole;
 import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,10 @@ public class SaveUserService {
     public SaveUserService(UserRepository userRepository, PasswordEncoder bcryptEncoder) {
         this.userRepository = userRepository;
         this.bcryptEncoder = bcryptEncoder;
+    }
+
+    public User loadUserFromUsername(String username){
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 
     public String save(UserDto user) {

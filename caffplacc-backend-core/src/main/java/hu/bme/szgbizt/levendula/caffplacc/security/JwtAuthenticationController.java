@@ -1,10 +1,11 @@
 package hu.bme.szgbizt.levendula.caffplacc.security;
 
-import hu.bme.szgbizt.levendula.caffplacc.login.JwtRequest;
-import hu.bme.szgbizt.levendula.caffplacc.login.JwtResponse;
-import hu.bme.szgbizt.levendula.caffplacc.login.UserAuthIF;
-import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
+import hu.bme.szgbizt.levendula.caffplacc.data.entity.RefreshToken;
+import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
+import hu.bme.szgbizt.levendula.caffplacc.login.*;
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
+import hu.bme.szgbizt.levendula.caffplacc.service.RefreshTokenService;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,6 +13,10 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Ref;
+import java.util.Date;
+import java.util.UUID;
 
 @CrossOrigin
 @RestController
@@ -26,11 +31,14 @@ public class JwtAuthenticationController implements UserAuthIF {
 
     private final SaveUserService saveUserService;
 
-    public JwtAuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, JwtUserDetailsService userDetailsService, SaveUserService saveUserService) {
+    private final RefreshTokenService refreshTokenService;
+
+    public JwtAuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, JwtUserDetailsService userDetailsService, SaveUserService saveUserService, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.userDetailsService = userDetailsService;
         this.saveUserService = saveUserService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @PostMapping("/register")
@@ -41,9 +49,35 @@ public class JwtAuthenticationController implements UserAuthIF {
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws CaffplaccException {
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+        final User user = saveUserService.loadUserFromUsername(authenticationRequest.getUsername());
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new JwtResponse(token));
+        final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
+        final Date expirationDate = jwtTokenUtil.getExpirationDateFromToken(refreshToken);
+        final UUID refreshtTokenId = refreshTokenService.saveRefreshToken(user, refreshToken, expirationDate);
+        return ResponseEntity.ok(new JwtResponse(token, refreshToken));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) throws  CaffplaccException {
+        final String token = refreshRequest.getRefreshToken();
+        final RefreshToken refreshToken = refreshTokenService.findByToken(token).orElseThrow(() -> new CaffplaccException("INVALID_REFRESH_TOKEN"));
+        if(verifyExpiration(refreshToken.getToken())){
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(refreshToken.getUser().getUsername());
+            final String newToken = jwtTokenUtil.generateToken(userDetails);
+            return ResponseEntity.ok(new JwtResponse(newToken, refreshToken.getToken()));
+        }
+        return ResponseEntity.badRequest().body(new JwtResponse(null, null));
+    }
+
+    private boolean verifyExpiration(String refreshToken){
+        try {
+            return jwtTokenUtil.validateRefreshToken(refreshToken);
+        } catch (ExpiredJwtException e){
+            return false;
+        } catch (Exception e){
+            throw new CaffplaccException("REFRESH_TOKEN_ERROR");
+        }
     }
 
     private void authenticate(String username, String password) throws CaffplaccException {
