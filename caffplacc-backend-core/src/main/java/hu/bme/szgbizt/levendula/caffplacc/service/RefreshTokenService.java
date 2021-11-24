@@ -3,16 +3,15 @@ package hu.bme.szgbizt.levendula.caffplacc.service;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.RefreshToken;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.RefreshTokenRepository;
-import hu.bme.szgbizt.levendula.caffplacc.security.JwtTokenUtil;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class RefreshTokenService {
 
     private RefreshTokenRepository refreshTokenRepository;
@@ -34,7 +33,11 @@ public class RefreshTokenService {
         return token.getId();
     }
 
-    public void deleteByToken(UUID id){
+    public void deleteById(UUID id){
         refreshTokenRepository.deleteById(id);
+    }
+
+    public void deleteByToken(String token){
+        refreshTokenRepository.deleteRefreshTokenByToken(token);
     }
 }

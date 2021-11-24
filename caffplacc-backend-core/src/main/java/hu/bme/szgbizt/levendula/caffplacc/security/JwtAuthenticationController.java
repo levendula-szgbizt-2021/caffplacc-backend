@@ -62,19 +62,18 @@ public class JwtAuthenticationController implements UserAuthIF {
     public ResponseEntity<?> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) throws  CaffplaccException {
         final String token = refreshRequest.getRefreshToken();
         final RefreshToken refreshToken = refreshTokenService.findByToken(token).orElseThrow(() -> new CaffplaccException("INVALID_REFRESH_TOKEN"));
-        if(verifyExpiration(refreshToken.getToken())){
-            final UserDetails userDetails = userDetailsService.loadUserByUsername(refreshToken.getUser().getUsername());
-            final String newToken = jwtTokenUtil.generateToken(userDetails);
-            return ResponseEntity.ok(new JwtResponse(newToken, refreshToken.getToken()));
-        }
-        return ResponseEntity.badRequest().body(new JwtResponse(null, null));
+        verifyExpiration(refreshToken.getToken());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(refreshToken.getUser().getUsername());
+        final String newToken = jwtTokenUtil.generateToken(userDetails);
+        return ResponseEntity.ok(new JwtResponse(newToken, refreshToken.getToken()));
     }
 
-    private boolean verifyExpiration(String refreshToken){
+    private void verifyExpiration(String refreshToken){
         try {
-            return jwtTokenUtil.validateRefreshToken(refreshToken);
+            boolean notExpired = jwtTokenUtil.validateRefreshToken(refreshToken);
         } catch (ExpiredJwtException e){
-            return false;
+            refreshTokenService.deleteByToken(refreshToken);
+            throw new CaffplaccException("REFRESH_TOKEN_EXPIRED");
         } catch (Exception e){
             throw new CaffplaccException("REFRESH_TOKEN_ERROR");
         }
