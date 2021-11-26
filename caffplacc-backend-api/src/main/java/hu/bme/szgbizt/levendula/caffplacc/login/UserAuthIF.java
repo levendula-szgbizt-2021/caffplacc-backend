@@ -13,5 +13,5 @@ public interface UserAuthIF {
     ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws CaffplaccException;
 
     @PostMapping("/refresh")
-    ResponseEntity<?> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) throws  CaffplaccException;
+    ResponseEntity<?> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) throws CaffplaccException;
 }

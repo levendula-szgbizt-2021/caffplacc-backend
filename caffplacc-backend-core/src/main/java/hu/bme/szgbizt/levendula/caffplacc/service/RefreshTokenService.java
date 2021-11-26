@@ -16,7 +16,7 @@ public class RefreshTokenService {
 
     private RefreshTokenRepository refreshTokenRepository;
 
-    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository){
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
@@ -24,7 +24,7 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByToken(token);
     }
 
-    public UUID saveRefreshToken(User user, String refreshToken, Date expDate){
+    public UUID saveRefreshToken(User user, String refreshToken, Date expDate) {
         RefreshToken token = new RefreshToken();
         token.setUser(user);
         token.setToken(refreshToken);
@@ -33,11 +33,11 @@ public class RefreshTokenService {
         return token.getId();
     }
 
-    public void deleteById(UUID id){
+    public void deleteById(UUID id) {
         refreshTokenRepository.deleteById(id);
     }
 
-    public void deleteByToken(String token){
+    public void deleteByToken(String token) {
         refreshTokenRepository.deleteRefreshTokenByToken(token);
     }
 }
