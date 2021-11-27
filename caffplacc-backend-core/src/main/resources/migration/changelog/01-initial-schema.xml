@@ -54,11 +54,26 @@
             <column name="ANIMATION_ID" type="UUID"/>
         </createTable>
     </changeSet>
+    <changeSet author="Radakxx (generated)" id="1638017443928-6">
+        <createTable tableName="REFRESHTOKEN">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_8"/>
+            </column>
+            <column name="EXPIRY_DATE" type="TIMESTAMP"/>
+            <column name="TOKEN" type="VARCHAR(255)"/>
+            <column name="USER_ID" type="UUID"/>
+        </createTable>
+    </changeSet>
     <changeSet author="Radakxx (generated)" id="1637489345696-6">
         <addUniqueConstraint columnNames="USERNAME" constraintName="UK2EI20MHE1EIQAHG450PA04F1" tableName="CAFF_USER"/>
     </changeSet>
     <changeSet author="Radakxx (generated)" id="1637489345696-7">
         <addUniqueConstraint columnNames="COMMENTS_ID" constraintName="UK_JIUIOK3T4QDR13SCCQGE66QM8" tableName="ANIMATION_COMMENTS"/>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1638017443928-9">
+        <createIndex indexName="FK22CGEHD9EGLYJNVXVRGR42A9C_INDEX_8" tableName="REFRESHTOKEN">
+            <column name="USER_ID"/>
+        </createIndex>
     </changeSet>
     <changeSet author="Radakxx (generated)" id="1637489345696-8">
         <createIndex indexName="FKDKHPSB8176WX7IQ5BTMDUG8W5_INDEX_1" tableName="ANIMATION_COMMENTS">
@@ -74,6 +89,9 @@
         <createIndex indexName="FKLPJV1RF0VVKLLJE9JGVI9S8X6_INDEX_3" tableName="CAFF_USER_ROLES">
             <column name="CAFF_USER_ID"/>
         </createIndex>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1638017443928-13">
+        <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="REFRESHTOKEN" constraintName="FK22CGEHD9EGLYJNVXVRGR42A9C" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="CAFF_USER" validate="true"/>
     </changeSet>
     <changeSet author="Radakxx (generated)" id="1637489345696-11">
         <addForeignKeyConstraint baseColumnNames="ANIMATION_ID" baseTableName="ANIMATION_COMMENTS" constraintName="FKDKHPSB8176WX7IQ5BTMDUG8W5" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="ANIMATION" validate="true"/>
