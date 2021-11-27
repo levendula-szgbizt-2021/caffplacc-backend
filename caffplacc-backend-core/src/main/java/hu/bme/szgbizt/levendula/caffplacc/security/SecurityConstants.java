@@ -6,4 +6,8 @@ public class SecurityConstants {
     public static final long REFRESH_EXPIRATION_TIME = 60; // in seconds
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
+
+    private SecurityConstants() {
+        throw new IllegalStateException("Utility class");
+    }
 }

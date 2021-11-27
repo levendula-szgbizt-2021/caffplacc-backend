@@ -38,7 +38,7 @@ public class AnimationService {
         return mapper.map(animationRepository.save(createAnimationEntity(request)));
     }
 
-    public AnimationResponse updateAnimation(UUID fromString, AnimationUpdateRequest request) {
+    public AnimationResponse updateAnimation(UUID id, AnimationUpdateRequest request) {
         return null;
     }
 
@@ -47,11 +47,11 @@ public class AnimationService {
         animationRepository.deleteById(id);
     }
 
-    public void previewAnimation(UUID fromString) {
+    public void previewAnimation(UUID id) {
         // todo
     }
 
-    public void downloadAnimation(UUID fromString) {
+    public void downloadAnimation(UUID id) {
         // todo
     }
 

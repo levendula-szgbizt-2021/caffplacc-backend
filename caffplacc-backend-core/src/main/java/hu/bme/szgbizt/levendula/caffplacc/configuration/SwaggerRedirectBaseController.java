@@ -14,7 +14,7 @@ import java.io.IOException;
 @ApiIgnore
 public class SwaggerRedirectBaseController {
     @GetMapping
-    void redirectToSwagger(HttpServletRequest request, HttpServletResponse response) {
+    public void redirectToSwagger(HttpServletRequest request, HttpServletResponse response) {
         try {
             String requestUrl = request.getRequestURL().toString(); // Levágjuk az utolsó /-t ha van
             if (requestUrl.lastIndexOf("/") == requestUrl.length() - 1) {
