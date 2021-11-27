@@ -24,6 +24,7 @@ public class User {
     String username;
     @JsonIgnore
     String password;
+    String email;
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(value = EnumType.STRING)
     List<UserRole> roles;

@@ -6,6 +6,8 @@ import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.login.*;
 import hu.bme.szgbizt.levendula.caffplacc.service.RefreshTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Marker;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.UUID;
 
+@Slf4j
 @CrossOrigin
 @RestController
 @RequestMapping("/api/auth")
@@ -46,10 +49,13 @@ public class JwtAuthenticationController implements UserAuthIF {
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         final User user = saveUserService.loadUserFromUsername(authenticationRequest.getUsername());
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-        final String token = jwtTokenUtil.generateToken(userDetails); // todo kellenek a final jelzők?
+        final String token = jwtTokenUtil.generateToken(userDetails);
         final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
         final Date expirationDate = jwtTokenUtil.getExpirationDateFromToken(refreshToken);
-        final UUID refreshTokenId = refreshTokenService.saveRefreshToken(user, refreshToken, expirationDate); // todo log?
+
+        final UUID refreshTokenId = refreshTokenService.saveRefreshToken(user, refreshToken, expirationDate);
+        log.info("Successfully saved refresh token with ID: " + refreshTokenId);
+
         return ResponseEntity.ok(new JwtResponse(token, refreshToken));
     }
 
@@ -65,7 +71,7 @@ public class JwtAuthenticationController implements UserAuthIF {
 
     private void verifyExpiration(String refreshToken) {
         try {
-            boolean notExpired = jwtTokenUtil.validateRefreshToken(refreshToken);
+            jwtTokenUtil.validateRefreshToken(refreshToken);
         } catch (ExpiredJwtException e) {
             refreshTokenService.deleteByToken(refreshToken);
             throw new CaffplaccException("REFRESH_TOKEN_EXPIRED");

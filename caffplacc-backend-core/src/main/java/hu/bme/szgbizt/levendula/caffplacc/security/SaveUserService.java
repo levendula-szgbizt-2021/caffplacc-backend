@@ -30,6 +30,7 @@ public class SaveUserService {
         User newUser = new User();
         newUser.setUsername(user.getUsername());
         newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
+        newUser.setEmail(user.getEmail());
         newUser.setRoles(List.of(UserRole.ROLE_USER));
         return userRepository.save(newUser).getId().toString();
     }

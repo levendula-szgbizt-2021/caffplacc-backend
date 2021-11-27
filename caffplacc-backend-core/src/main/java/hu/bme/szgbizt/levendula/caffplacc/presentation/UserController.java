@@ -6,6 +6,7 @@ import hu.bme.szgbizt.levendula.caffplacc.service.UserService;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserProfileIF;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,8 @@ public class UserController implements UserProfileIF {
     }
 
     @Override
-    public ResponseEntity<?> changeUsernameOrPassword(UserDto dto) throws CaffplaccException {
-        return service.changeUsernameOrPassword(dto);
+    @PostMapping
+    public ResponseEntity<?> changeUserData(UserDto dto) throws CaffplaccException {
+        return service.changeUserData(dto);
     }
 }

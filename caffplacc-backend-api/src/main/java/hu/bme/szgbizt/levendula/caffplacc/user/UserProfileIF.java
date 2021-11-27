@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface UserProfileIF {
 
-    @ApiOperation(value = "changeUsernameOrPassword", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by an user to update their username or password.")
-    @PostMapping("changeUsernameOrPassword")
-    ResponseEntity<?> changeUsernameOrPassword(@RequestBody UserDto dto) throws CaffplaccException;
+    @ApiOperation(value = "changeUserData", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by an user to update their user data.")
+    @PostMapping
+    ResponseEntity<?> changeUserData(@RequestBody UserDto dto) throws CaffplaccException;
 }

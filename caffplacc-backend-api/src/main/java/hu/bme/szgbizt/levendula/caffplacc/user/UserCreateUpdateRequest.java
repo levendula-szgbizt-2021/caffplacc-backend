@@ -14,5 +14,6 @@ public class UserCreateUpdateRequest {
 
     String username;
     String password;
+    String email;
     boolean admin;
 }
