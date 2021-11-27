@@ -2,11 +2,15 @@ package hu.bme.szgbizt.levendula.caffplacc.service;
 
 import hu.bme.szgbizt.levendula.caffplacc.animation.*;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Animation;
+import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
+import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.AnimationResponseMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,11 +24,13 @@ public class AnimationService {
     private final AnimationRepository animationRepository;
     private final CommentRepository commentRepository;
     private final AnimationResponseMapper mapper;
+    private final UserRepository userRepository;
 
-    public AnimationService(AnimationRepository animationRepository, CommentRepository commentRepository, AnimationResponseMapper mapper) {
+    public AnimationService(AnimationRepository animationRepository, CommentRepository commentRepository, AnimationResponseMapper mapper, UserRepository userRepository) {
         this.animationRepository = animationRepository;
         this.commentRepository = commentRepository;
         this.mapper = mapper;
+        this.userRepository = userRepository;
     }
 
     public Page<AnimationResponse> listAnimations(String title, Pageable pageable) {
@@ -62,5 +68,11 @@ public class AnimationService {
 
     private Animation createAnimationEntity(MultipartFile file) {
         return new Animation(); // todo
+    }
+
+    private UUID getUserToken() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var userName = userDetails.getUsername();
+        return userRepository.findByUsername(userName).orElseThrow(() -> new EntityNotFoundException(User.class.getName())).getId();
     }
 }
