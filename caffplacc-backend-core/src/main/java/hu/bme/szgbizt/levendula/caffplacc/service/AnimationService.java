@@ -8,6 +8,7 @@ import hu.bme.szgbizt.levendula.caffplacc.presentation.AnimationResponseMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.UUID;
@@ -34,8 +35,8 @@ public class AnimationService {
         return mapper.detailedMap(findAnimationById(id));
     }
 
-    public AnimationResponse createAnimation(AnimationCreateRequest request) {
-        return mapper.map(animationRepository.save(createAnimationEntity(request)));
+    public AnimationResponse createAnimation(MultipartFile file) {
+        return mapper.map(animationRepository.save(createAnimationEntity(file)));
     }
 
     public AnimationResponse updateAnimation(UUID id, AnimationUpdateRequest request) {
@@ -59,7 +60,7 @@ public class AnimationService {
         return animationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(Animation.class.getName()));
     }
 
-    private Animation createAnimationEntity(AnimationCreateRequest request) {
+    private Animation createAnimationEntity(MultipartFile file) {
         return new Animation(); // todo
     }
 }

@@ -35,8 +35,8 @@ public class AnimationController implements AnimationIF {
 
     @Override
     @PostMapping
-    public AnimationResponse createAnimation(@RequestBody AnimationCreateRequest request, @RequestParam("file") MultipartFile file) {
-        return service.createAnimation(request);
+    public AnimationResponse createAnimation(@RequestParam("file") MultipartFile file) {
+        return service.createAnimation(file);
     }
 
     @Override
