@@ -2,9 +2,8 @@ package hu.bme.szgbizt.levendula.caffplacc.presentation;
 
 import hu.bme.szgbizt.levendula.caffplacc.service.AdminUserService;
 import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserIF;
-import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateRequest;
+import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateUpdateRequest;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
-import hu.bme.szgbizt.levendula.caffplacc.user.UserUpdateRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,12 +34,12 @@ public class AdminUserController implements AdminUserIF {
     }
 
     @Override
-    public UserResponse createUser(UserCreateRequest request) {
+    public UserResponse createUser(UserCreateUpdateRequest request) {
         return service.createUser(request);
     }
 
     @Override
-    public UserResponse updateUser(String id, UserUpdateRequest request) {
+    public UserResponse updateUser(String id, UserCreateUpdateRequest request) {
         return service.updateUser(UUID.fromString(id), request);
     }
 

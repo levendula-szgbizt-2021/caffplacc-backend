@@ -6,9 +6,8 @@ import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.UserResponseMapper;
-import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateRequest;
+import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateUpdateRequest;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
-import hu.bme.szgbizt.levendula.caffplacc.user.UserUpdateRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,7 +42,7 @@ public class AdminUserService {
         return mapper.map(findUserById(id));
     }
 
-    public UserResponse createUser(UserCreateRequest request) {
+    public UserResponse createUser(UserCreateUpdateRequest request) {
         var newUser = new User();
         newUser.setUsername(request.getUsername());
         newUser.setPassword(bcryptEncoder.encode(request.getPassword()));
@@ -55,7 +54,7 @@ public class AdminUserService {
         return mapper.map(userRepository.save(newUser));
     }
 
-    public UserResponse updateUser(UUID id, UserUpdateRequest request) {
+    public UserResponse updateUser(UUID id, UserCreateUpdateRequest request) {
         return null;
     }
 
