@@ -1,6 +1,8 @@
 package hu.bme.szgbizt.levendula.caffplacc.service;
 
-import hu.bme.szgbizt.levendula.caffplacc.animation.*;
+import hu.bme.szgbizt.levendula.caffplacc.animation.AnimationDetailedResponse;
+import hu.bme.szgbizt.levendula.caffplacc.animation.AnimationResponse;
+import hu.bme.szgbizt.levendula.caffplacc.animation.AnimationUpdateRequest;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Animation;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
@@ -46,7 +48,9 @@ public class AnimationService {
     }
 
     public AnimationResponse updateAnimation(UUID id, AnimationUpdateRequest request) {
-        return null;
+        var animation = findAnimationByIdAndUserId(id, getUserToken());
+        animation.setTitle(request.getTitle());
+        return mapper.map(animationRepository.save(animation));
     }
 
     public void deleteAnimation(UUID id) {
@@ -64,6 +68,10 @@ public class AnimationService {
 
     private Animation findAnimationById(UUID id) {
         return animationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(Animation.class.getName()));
+    }
+
+    private Animation findAnimationByIdAndUserId(UUID id, UUID userId) {
+        return animationRepository.findByIdAndUserId(id, userId).orElseThrow(() -> new EntityNotFoundException(Animation.class.getName()));
     }
 
     private Animation createAnimationEntity(MultipartFile file) {

@@ -4,7 +4,7 @@ import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
 import hu.bme.szgbizt.levendula.caffplacc.service.UserService;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserProfileIF;
-import org.springframework.http.ResponseEntity;
+import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +23,7 @@ public class UserController implements UserProfileIF {
 
     @Override
     @PostMapping
-    public ResponseEntity<?> changeUserData(UserDto dto) throws CaffplaccException {
+    public UserResponse changeUserData(UserDto dto) throws CaffplaccException {
         return service.changeUserData(dto);
     }
 }

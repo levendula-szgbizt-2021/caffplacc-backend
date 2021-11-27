@@ -5,6 +5,7 @@ import hu.bme.szgbizt.levendula.caffplacc.data.entity.UserRole;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
+import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.UserResponseMapper;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateUpdateRequest;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
@@ -46,6 +47,7 @@ public class AdminUserService {
         var newUser = new User();
         newUser.setUsername(request.getUsername());
         newUser.setPassword(bcryptEncoder.encode(request.getPassword()));
+        newUser.setEmail(request.getEmail());
         if (request.isAdmin()) {
             newUser.setRoles(List.of(UserRole.ROLE_USER, UserRole.ROLE_ADMIN));
         } else {
@@ -55,7 +57,26 @@ public class AdminUserService {
     }
 
     public UserResponse updateUser(UUID id, UserCreateUpdateRequest request) {
-        return null;
+        var user = findUserById(id);
+        if (request.getUsername() != null) {
+            if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+                throw new CaffplaccException("That username is taken!");
+            } else {
+                user.setUsername(request.getUsername());
+            }
+        }
+        if (request.getPassword() != null) {
+            user.setPassword(bcryptEncoder.encode(request.getPassword()));
+        }
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
+        if (request.isAdmin()) {
+            user.setRoles(List.of(UserRole.ROLE_USER, UserRole.ROLE_ADMIN));
+        } else {
+            user.setRoles(List.of(UserRole.ROLE_USER));
+        }
+        return mapper.map(userRepository.save(user));
     }
 
     public void deleteUser(UUID id) {
