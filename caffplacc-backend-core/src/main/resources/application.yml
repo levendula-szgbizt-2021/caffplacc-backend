@@ -1,18 +1,17 @@
 server:
   port: 8081
-
 spring:
   datasource:
-    url: jdbc:h2:file:./h2data/caffplacc-backend-application-h2
-    driver-class-name: org.h2.Driver
-    username: sa
+    url: jdbc:postgresql://database:5432/postgres
+    driver-class-name: org.postgresql.Driver
+    username: username
     password: password
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     enabled: true
     change-log: classpath:migration/liquibase-changelog.xml

@@ -11,7 +11,7 @@ public interface AnimationIF {
 
     @ApiOperation(value = "listAnimations", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by a user to get a page of animations.")
     @GetMapping
-    Page<AnimationResponse> listAnimations(@RequestParam("query") String query, Pageable pageable);
+    Page<AnimationResponse> listAnimations(@RequestParam(required = false, name = "title") String query, Pageable pageable);
 
     @ApiOperation(value = "getOneAnimation", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by a user to get the details of an animation.")
     @GetMapping("/{id}")

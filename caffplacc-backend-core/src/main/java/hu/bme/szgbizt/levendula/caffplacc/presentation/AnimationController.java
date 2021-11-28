@@ -23,8 +23,8 @@ public class AnimationController implements AnimationIF {
 
     @Override
     @GetMapping
-    public Page<AnimationResponse> listAnimations(@RequestParam("query") String query, Pageable pageable) {
-        return service.listAnimations(query, pageable);
+    public Page<AnimationResponse> listAnimations(@RequestParam(required = false, name = "title") String title, Pageable pageable) {
+        return service.listAnimations(title, pageable);
     }
 
     @Override

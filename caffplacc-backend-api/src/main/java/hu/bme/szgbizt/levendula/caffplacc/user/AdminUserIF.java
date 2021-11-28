@@ -10,7 +10,7 @@ public interface AdminUserIF {
 
     @ApiOperation(value = "listUsers", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by an administrator privileges to list the registered users.")
     @GetMapping
-    Page<UserResponse> listUsers(@RequestParam("query") String query, Pageable pageable);
+    Page<UserResponse> listUsers(@RequestParam(required = false, name = "username") String username, Pageable pageable);
 
     @ApiOperation(value = "getOneUser", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by an administrator to get one user by their userId.")
     @GetMapping("/{id}")

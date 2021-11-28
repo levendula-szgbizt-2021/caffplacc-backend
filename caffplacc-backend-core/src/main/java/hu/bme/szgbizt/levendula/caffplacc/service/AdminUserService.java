@@ -36,7 +36,11 @@ public class AdminUserService {
     }
 
     public Page<UserResponse> listUsers(String username, Pageable pageable) {
-        return userRepository.findAllByUsernameContains(username, pageable).map(mapper::map);
+        if (username == null) {
+            return userRepository.findAll(pageable).map(mapper::map);
+        } else {
+            return userRepository.findAllByUsernameContains(username, pageable).map(mapper::map);
+        }
     }
 
     public UserResponse getOneUser(UUID id) {

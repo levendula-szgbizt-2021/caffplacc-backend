@@ -36,7 +36,11 @@ public class AnimationService {
     }
 
     public Page<AnimationResponse> listAnimations(String title, Pageable pageable) {
-        return animationRepository.findAllByTitleContains(title, pageable).map(mapper::map);
+        if (title == null) {
+            return animationRepository.findAll(pageable).map(mapper::map);
+        } else {
+            return animationRepository.findAllByTitleContains(title, pageable).map(mapper::map);
+        }
     }
 
     public AnimationDetailedResponse getOneAnimation(UUID id) {
