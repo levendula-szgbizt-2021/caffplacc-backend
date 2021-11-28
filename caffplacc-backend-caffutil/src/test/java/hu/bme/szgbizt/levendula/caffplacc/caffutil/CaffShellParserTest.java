@@ -2,6 +2,7 @@ package hu.bme.szgbizt.levendula.caffplacc.caffutil;
 
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.data.Caff;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 
+@Disabled("Requires caff library and only works on UNIX/Linux anyway")
 class CaffShellParserTest {
 
     @Test
