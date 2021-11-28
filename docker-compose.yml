@@ -1,0 +1,28 @@
+version: '3'
+services:
+  caffplacc-backend:
+    image: caffplacc-backend
+    ports:
+      - "8081:8081"
+    depends_on:
+      - database
+    networks:
+      - survey-network
+
+  database:
+    image: 'postgres:latest'
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    volumes:
+      - ./db-data/:/var/lib/postgresql/data
+    networks:
+      - survey-network
+
+networks:
+  survey-network:
+    driver: bridge
+    

@@ -1,0 +1,109 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+    <changeSet author="Radakxx (generated)" id="1637489345696-1">
+        <createTable tableName="ANIMATION">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_E"/>
+            </column>
+            <column name="FILE_SIZE_IN_MB" type="DOUBLE(17)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="HASH" type="VARCHAR(255)"/>
+            <column name="TITLE" type="VARCHAR(255)"/>
+            <column name="UPLOAD_DATE" type="TIMESTAMP"/>
+            <column name="UPLOADER_USER_NAME" type="VARCHAR(255)"/>
+            <column name="USER_ID" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-2">
+        <createTable tableName="ANIMATION_COMMENTS">
+            <column name="ANIMATION_ID" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COMMENTS_ID" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-3">
+        <createTable tableName="CAFF_USER">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_2"/>
+            </column>
+            <column name="EMAIL" type="VARCHAR(255)"/>
+            <column name="PASSWORD" type="VARCHAR(255)"/>
+            <column name="USERNAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-4">
+        <createTable tableName="CAFF_USER_ROLES">
+            <column name="CAFF_USER_ID" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLES" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-5">
+        <createTable tableName="COMMENT">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_6"/>
+            </column>
+            <column name="CONTENT" type="VARCHAR(255)"/>
+            <column name="DATE" type="TIMESTAMP"/>
+            <column name="USER_ID" type="UUID"/>
+            <column name="USER_NAME" type="VARCHAR(255)"/>
+            <column name="ANIMATION_ID" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1638017443928-6">
+        <createTable tableName="REFRESHTOKEN">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_8"/>
+            </column>
+            <column name="EXPIRY_DATE" type="TIMESTAMP"/>
+            <column name="TOKEN" type="VARCHAR(255)"/>
+            <column name="USER_ID" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-6">
+        <addUniqueConstraint columnNames="USERNAME" constraintName="UK2EI20MHE1EIQAHG450PA04F1" tableName="CAFF_USER"/>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-7">
+        <addUniqueConstraint columnNames="COMMENTS_ID" constraintName="UK_JIUIOK3T4QDR13SCCQGE66QM8" tableName="ANIMATION_COMMENTS"/>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1638017443928-9">
+        <createIndex indexName="FK22CGEHD9EGLYJNVXVRGR42A9C_INDEX_8" tableName="REFRESHTOKEN">
+            <column name="USER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-8">
+        <createIndex indexName="FKDKHPSB8176WX7IQ5BTMDUG8W5_INDEX_1" tableName="ANIMATION_COMMENTS">
+            <column name="ANIMATION_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-9">
+        <createIndex indexName="FKHHAX2EKFPKW5FL6U52GK38WVD_INDEX_6" tableName="COMMENT">
+            <column name="ANIMATION_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-10">
+        <createIndex indexName="FKLPJV1RF0VVKLLJE9JGVI9S8X6_INDEX_3" tableName="CAFF_USER_ROLES">
+            <column name="CAFF_USER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1638017443928-13">
+        <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="REFRESHTOKEN" constraintName="FK22CGEHD9EGLYJNVXVRGR42A9C" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="CAFF_USER" validate="true"/>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-11">
+        <addForeignKeyConstraint baseColumnNames="ANIMATION_ID" baseTableName="ANIMATION_COMMENTS" constraintName="FKDKHPSB8176WX7IQ5BTMDUG8W5" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="ANIMATION" validate="true"/>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-12">
+        <addForeignKeyConstraint baseColumnNames="COMMENTS_ID" baseTableName="ANIMATION_COMMENTS" constraintName="FKF2IQG38AESJ2URQ6TE0AD5A6O" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="COMMENT" validate="true"/>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-13">
+        <addForeignKeyConstraint baseColumnNames="ANIMATION_ID" baseTableName="COMMENT" constraintName="FKHHAX2EKFPKW5FL6U52GK38WVD" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="ANIMATION" validate="true"/>
+    </changeSet>
+    <changeSet author="Radakxx (generated)" id="1637489345696-14">
+        <addForeignKeyConstraint baseColumnNames="CAFF_USER_ID" baseTableName="CAFF_USER_ROLES" constraintName="FKLPJV1RF0VVKLLJE9JGVI9S8X6" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="CAFF_USER" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,6 +1,7 @@
 HELP.md
 .gradle
 build/
+target/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -25,6 +26,9 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+.h2data
+h2data
+db-data
 
 ### NetBeans ###
 /nbproject/private/
@@ -36,5 +40,3 @@ out/
 ### VS Code ###
 .vscode/
 
-### Generated ###
-pom.xml
