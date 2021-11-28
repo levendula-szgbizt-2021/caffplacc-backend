@@ -4,6 +4,7 @@ import hu.bme.szgbizt.levendula.caffplacc.data.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,6 +12,8 @@ import java.util.UUID;
 public interface CommentRepository extends JpaRepository<Comment, UUID> {
 
     Optional<Comment> findByIdAndUserId(UUID id, UUID userId);
+
+    List<Comment> findAllByAnimationId(UUID id);
 
     void deleteAllByAnimationId(UUID id);
 

@@ -93,7 +93,10 @@ public class AnimationService {
     }
 
     public AnimationDetailedResponse getOneAnimation(UUID id) {
-        return mapper.detailedMap(findAnimationById(id));
+        var animation = findAnimationById(id);
+        var comments = commentRepository.findAllByAnimationId(animation.getId());
+        animation.setComments(comments);
+        return mapper.detailedMap(animation);
     }
 
     public AnimationResponse createAnimation(String title, MultipartFile file) {
