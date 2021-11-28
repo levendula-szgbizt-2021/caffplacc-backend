@@ -1,9 +1,11 @@
 package hu.bme.szgbizt.levendula.caffplacc.animation;
 
 import io.swagger.annotations.ApiOperation;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +21,7 @@ public interface AnimationIF {
 
     @ApiOperation(value = "createSurvey", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint is used to upload an animation to the server.")
     @PostMapping
-    AnimationResponse createAnimation(@RequestParam("file") MultipartFile file);
+    AnimationResponse createAnimation(@RequestParam String title, @RequestParam("file") MultipartFile file);
 
     @ApiOperation(value = "updateSurvey", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by a user to change the title of one of their animations.")
     @PutMapping("/{id}")
@@ -31,9 +33,9 @@ public interface AnimationIF {
 
     @ApiOperation(value = "previewAnimation", notes = "This endpoint can be called to download the preview of an animation.")
     @GetMapping("/{id}/preview")
-    void previewAnimation(@PathVariable String id);
+    ResponseEntity<?> previewAnimation(@PathVariable String id);
 
     @ApiOperation(value = "downloadAnimation", notes = "This endpoint can be called to download an animation.")
     @GetMapping("/{id}/download")
-    void downloadAnimation(@PathVariable String id);
+    ResponseEntity<?> downloadAnimation(@PathVariable String id);
 }

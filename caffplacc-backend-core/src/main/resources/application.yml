@@ -1,5 +1,8 @@
 server:
   port: 8081
+files:
+  upload-dir: "./files"
+  preview-dir: "./previews"
 spring:
   datasource:
     url: jdbc:postgresql://database:5432/postgres
