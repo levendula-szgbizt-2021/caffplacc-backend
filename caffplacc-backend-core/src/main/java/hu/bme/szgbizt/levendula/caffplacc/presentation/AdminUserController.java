@@ -30,25 +30,25 @@ public class AdminUserController implements AdminUserIF {
 
     @Override
     @GetMapping("/{id}")
-    public UserResponse getOneUser(String id) {
+    public UserResponse getOneUser(@PathVariable String id) {
         return service.getOneUser(UUID.fromString(id));
     }
 
     @Override
     @PostMapping
-    public UserResponse createUser(UserCreateUpdateRequest request) {
+    public UserResponse createUser(@RequestBody UserCreateUpdateRequest request) {
         return service.createUser(request);
     }
 
     @Override
     @PutMapping("/{id}")
-    public UserResponse updateUser(String id, UserCreateUpdateRequest request) {
+    public UserResponse updateUser(@PathVariable String id, @RequestBody UserCreateUpdateRequest request) {
         return service.updateUser(UUID.fromString(id), request);
     }
 
     @Override
     @DeleteMapping("/{id}")
-    public void deleteUser(String id) {
+    public void deleteUser(@PathVariable String id) {
         service.deleteUser(UUID.fromString(id));
     }
 }
