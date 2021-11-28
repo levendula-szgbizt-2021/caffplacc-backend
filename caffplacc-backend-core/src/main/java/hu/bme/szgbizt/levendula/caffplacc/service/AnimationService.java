@@ -9,6 +9,7 @@ import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
+import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.AnimationResponseMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,18 +39,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Date;
 import java.util.UUID;
 
 @Slf4j
 @Service
 public class AnimationService {
 
-//    @Value("${files.upload-dir}")
-//    private String uploadDirectory;
-//
-//    @Value("${files.preview-dir}")
-//    private String previewDirectory;
     private Path fileStorageLocation;
     private Path previewStorageLocation;
 
@@ -91,17 +86,27 @@ public class AnimationService {
         return mapper.detailedMap(findAnimationById(id));
     }
 
-    public AnimationResponse createAnimation(MultipartFile file) {
-        return mapper.map(animationRepository.save(createAnimationEntity(file)));
+    public AnimationResponse createAnimation(String title, MultipartFile file) {
+        return mapper.map(animationRepository.save(createAnimationEntity(title, file)));
     }
 
     public AnimationResponse updateAnimation(UUID id, AnimationUpdateRequest request) {
         return null;
     }
 
-    public void deleteAnimation(UUID id) {
-        commentRepository.deleteAllByAnimationId(id);
-        animationRepository.deleteById(id);
+    public void deleteAnimation(UUID id) throws IOException {
+        UUID userId = getUserToken();
+        Animation anim = findAnimationById(id);
+        if(anim.getUserId().equals(userId)) {
+            commentRepository.deleteAllByAnimationId(id);
+            animationRepository.deleteById(id);
+            String fileName = id.toString() + ".caff";
+            String previewName = id.toString() + ".gif";
+            Path filePath = fileStorageLocation.resolve(fileName).normalize();
+            Path previewPath = previewStorageLocation.resolve(previewName).normalize();
+            Files.delete(filePath);
+            Files.delete(previewPath);
+        }
     }
 
     public Resource previewAnimation(UUID id) throws FileNotFoundException {
@@ -132,7 +137,7 @@ public class AnimationService {
         return animationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(Animation.class.getName()));
     }
 
-    private Animation createAnimationEntity(MultipartFile file) {
+    private Animation createAnimationEntity(String title, MultipartFile file) {
         Animation anim = new Animation();
         try {
             //Caff caff = caffUtil.parse(file.getBytes());
@@ -140,41 +145,51 @@ public class AnimationService {
             caff.setCreator("Jancsi");
             caff.setDate(LocalDateTime.now());
             caff.setGif(file.getBytes());
-            //Animation anim = new Animation();
+
             UUID userId = getUserToken();
             User user = userRepository.getById(userId);
+
             anim.setId(UUID.randomUUID());
             anim.setUserId(user.getId());
             anim.setUploaderUserName(user.getUsername());
             anim.setUploadDate(caff.getDate().toInstant(ZoneOffset.UTC));
             anim.setFileSizeInMb(file.getSize() * 0.000001); //Byte to MByte conversion
-            anim.setTitle("Test"); //TODO: How do we get the title? In the request or from the parser?
+            anim.setTitle(title);
+
             String hash = getHashOfFile(file);
             anim.setHash(hash);
+
             anim = animationRepository.save(anim);
             String animId = anim.getId().toString();
             String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
+
             String fileExtension = "";
             if(originalFilename.lastIndexOf(".") != -1) {
                 fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
             }
+
             String fileName = animId + fileExtension;
             Path targetLocation = fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
             String previewFileName = animId + ".gif";
             Path previewTargetLocation = previewStorageLocation.resolve(previewFileName);
             InputStream bis = new ByteArrayInputStream(caff.getGif());
             Files.copy(bis, previewTargetLocation, StandardCopyOption.REPLACE_EXISTING);
+
             return anim;
-        } catch (IOException | /*InterruptedException |*/ NoSuchAlgorithmException e) {
-            // TODO: Handling wrong CAFF file or other exceptions.
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new CaffplaccException("FILE_UPLOAD_FAILED");
+        } /*catch (InterruptedException e) {
+            throw new CaffplaccException("FILE_UPLOAD_FAILED");
+
+        } */catch (NoSuchAlgorithmException e) {
+            throw new CaffplaccException("FILE_UPLOAD_FAILED");
         }
-        return anim;
     }
 
     private String getHashOfFile(MultipartFile file) throws NoSuchAlgorithmException, IOException {
-        MessageDigest md = MessageDigest.getInstance("MD5");
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
         InputStream is = file.getInputStream();
         DigestInputStream dis = new DigestInputStream(is, md);
         while (dis.read() != -1);

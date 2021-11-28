@@ -21,7 +21,7 @@ public interface AnimationIF {
 
     @ApiOperation(value = "createSurvey", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint is used to upload an animation to the server.")
     @PostMapping
-    AnimationResponse createAnimation(@RequestParam("file") MultipartFile file);
+    AnimationResponse createAnimation(@RequestParam String title, @RequestParam("file") MultipartFile file);
 
     @ApiOperation(value = "updateSurvey", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by a user to change the title of one of their animations.")
     @PutMapping("/{id}")

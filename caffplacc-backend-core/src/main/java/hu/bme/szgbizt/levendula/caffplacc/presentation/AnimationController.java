@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URLConnection;
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
@@ -42,8 +42,8 @@ public class AnimationController implements AnimationIF {
 
     @Override
     @PostMapping
-    public AnimationResponse createAnimation(@RequestParam("file") MultipartFile file) {
-        return service.createAnimation(file);
+    public AnimationResponse createAnimation(@RequestParam String title, @RequestParam("file") MultipartFile file) {
+        return service.createAnimation(title, file);
     }
 
     @Override
@@ -55,7 +55,11 @@ public class AnimationController implements AnimationIF {
     @Override
     @DeleteMapping("/{id}")
     public void deleteAnimation(@PathVariable String id) {
-        service.deleteAnimation(UUID.fromString(id));
+        try {
+            service.deleteAnimation(UUID.fromString(id));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -64,20 +68,12 @@ public class AnimationController implements AnimationIF {
         try {
             Resource resource = service.previewAnimation(UUID.fromString(id));
             String contentType = "image/gif";
-//            try {
-//                contentType = URLConnection.guessContentTypeFromStream(resource.getInputStream());
-//            } catch (IOException ex) {
-//                //TODO: Error handling
-//            }
-//            if(contentType == null) {
-//                contentType = "application/octet-stream";
-//            }
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
         } catch (FileNotFoundException e) {
-            return ResponseEntity.internalServerError().body(e.toString());
+            return ResponseEntity.notFound().location(URI.create(id)).build();
         }
     }
 
@@ -92,7 +88,7 @@ public class AnimationController implements AnimationIF {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
         } catch (FileNotFoundException e) {
-            return ResponseEntity.internalServerError().body(e.toString());
+            return ResponseEntity.notFound().location(URI.create(id)).build();
         }
     }
 }
