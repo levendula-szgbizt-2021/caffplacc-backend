@@ -6,6 +6,7 @@ import hu.bme.szgbizt.levendula.caffplacc.service.UserService;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserProfileIF;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,7 @@ public class UserController implements UserProfileIF {
     }
 
     @Override
+    @GetMapping
     public UserResponse getUserData() throws CaffplaccException {
         return service.getUserData();
     }

@@ -7,7 +7,6 @@ import hu.bme.szgbizt.levendula.caffplacc.login.*;
 import hu.bme.szgbizt.levendula.caffplacc.service.RefreshTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Marker;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,7 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @CrossOrigin
@@ -56,7 +57,7 @@ public class JwtAuthenticationController implements UserAuthIF {
         final UUID refreshTokenId = refreshTokenService.saveRefreshToken(user, refreshToken, expirationDate);
         log.info("Successfully saved refresh token with ID: " + refreshTokenId);
 
-        return ResponseEntity.ok(new JwtResponse(token, refreshToken));
+        return ResponseEntity.ok(new JwtResponse(token, refreshToken, user.getId().toString(), user.getUsername(), user.getRoles().stream().map(Objects::toString).collect(Collectors.toList())));
     }
 
     @PostMapping("/refresh")
@@ -66,7 +67,8 @@ public class JwtAuthenticationController implements UserAuthIF {
         verifyExpiration(refreshToken.getToken());
         final UserDetails userDetails = userDetailsService.loadUserByUsername(refreshToken.getUser().getUsername());
         final String newToken = jwtTokenUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new JwtResponse(newToken, refreshToken.getToken()));
+        final User user = saveUserService.loadUserFromUsername(userDetails.getUsername());
+        return ResponseEntity.ok(new JwtResponse(newToken, refreshToken.getToken(), user.getId().toString(), user.getUsername(), user.getRoles().stream().map(Objects::toString).collect(Collectors.toList())));
     }
 
     private void verifyExpiration(String refreshToken) {
