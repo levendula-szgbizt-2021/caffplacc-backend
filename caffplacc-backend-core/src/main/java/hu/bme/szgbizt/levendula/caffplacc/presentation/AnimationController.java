@@ -29,7 +29,13 @@ public class AnimationController implements AnimationIF {
     }
 
     @Override
-    @GetMapping
+    @GetMapping()
+    public Page<AnimationResponse> listMyAnimations(Pageable pageable) {
+        return service.listMyAnimations(pageable);
+    }
+
+    @Override
+    @GetMapping("/search")
     public Page<AnimationResponse> listAnimations(@RequestParam(required = false, name = "title") String title, Pageable pageable) {
         return service.listAnimations(title, pageable);
     }
@@ -90,5 +96,23 @@ public class AnimationController implements AnimationIF {
         } catch (FileNotFoundException e) {
             return ResponseEntity.notFound().location(URI.create(id)).build();
         }
+    }
+
+    @Override
+    @PostMapping("/{id}/comment")
+    public CommentResponse createComment(@PathVariable String id, CommentCreateUpdateRequest request) {
+        return service.createComment(UUID.fromString(id), request);
+    }
+
+    @Override
+    @PutMapping("/{id}/comment/{commentId}")
+    public CommentResponse updateComment(@PathVariable String id, @PathVariable String commentId, CommentCreateUpdateRequest request) {
+        return service.updateComment(UUID.fromString(id), UUID.fromString(commentId), request);
+    }
+
+    @Override
+    @DeleteMapping("/{id}/comment/{commentId}")
+    public void deleteComment(@PathVariable String id, @PathVariable String commentId) {
+        service.deleteComment(UUID.fromString(id));
     }
 }

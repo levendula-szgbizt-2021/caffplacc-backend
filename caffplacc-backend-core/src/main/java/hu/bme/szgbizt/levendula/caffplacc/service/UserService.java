@@ -27,6 +27,10 @@ public class UserService {
         this.mapper = mapper;
     }
 
+    public UserResponse getUserData() {
+        return mapper.map(findUserById(getUserToken()));
+    }
+
     public UserResponse changeUserData(UserDto request) {
         var user = findUserById(getUserToken());
         if (request.getUsername() != null) {

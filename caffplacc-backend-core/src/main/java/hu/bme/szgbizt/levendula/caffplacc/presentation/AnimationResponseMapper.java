@@ -2,7 +2,9 @@ package hu.bme.szgbizt.levendula.caffplacc.presentation;
 
 import hu.bme.szgbizt.levendula.caffplacc.animation.AnimationDetailedResponse;
 import hu.bme.szgbizt.levendula.caffplacc.animation.AnimationResponse;
+import hu.bme.szgbizt.levendula.caffplacc.animation.CommentResponse;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Animation;
+import hu.bme.szgbizt.levendula.caffplacc.data.entity.Comment;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -18,4 +20,5 @@ public interface AnimationResponseMapper {
         return value.toString();
     }
 
+    CommentResponse map(Comment comment);
 }

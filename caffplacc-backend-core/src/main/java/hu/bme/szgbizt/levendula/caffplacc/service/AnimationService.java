@@ -5,6 +5,7 @@ import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffShellParser;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtil;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.data.Caff;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Animation;
+import hu.bme.szgbizt.levendula.caffplacc.data.entity.Comment;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
@@ -37,6 +38,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
@@ -45,16 +47,16 @@ import java.util.UUID;
 @Service
 public class AnimationService {
 
-    private Path fileStorageLocation;
-    private Path previewStorageLocation;
-
     private final AnimationRepository animationRepository;
     private final CommentRepository commentRepository;
     private final AnimationResponseMapper mapper;
     private final UserRepository userRepository;
     private final CaffUtil caffUtil;
+    private final Path fileStorageLocation;
+    private final Path previewStorageLocation;
 
-    public AnimationService(AnimationRepository animationRepository, CommentRepository commentRepository, AnimationResponseMapper mapper, UserRepository userRepository, @Value("${files.upload-dir}") String uploadDirectory, @Value("${files.preview-dir}") String previewDirectory) {
+    public AnimationService(AnimationRepository animationRepository, CommentRepository commentRepository, AnimationResponseMapper mapper, UserRepository userRepository,
+                            @Value("${files.upload-dir}") String uploadDirectory, @Value("${files.preview-dir}") String previewDirectory) {
         this.animationRepository = animationRepository;
         this.commentRepository = commentRepository;
         this.mapper = mapper;
@@ -62,14 +64,14 @@ public class AnimationService {
         this.caffUtil = new CaffShellParser(Runtime.getRuntime());
         this.fileStorageLocation = Paths.get(uploadDirectory).toAbsolutePath().normalize();
         this.previewStorageLocation = Paths.get(previewDirectory).toAbsolutePath().normalize();
-        if(!Files.exists(fileStorageLocation)) {
+        if (!Files.exists(fileStorageLocation)) {
             try {
                 Files.createDirectories(fileStorageLocation);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        if(!Files.exists(previewStorageLocation)) {
+        if (!Files.exists(previewStorageLocation)) {
             try {
                 Files.createDirectories(previewStorageLocation);
             } catch (IOException e) {
@@ -84,6 +86,10 @@ public class AnimationService {
         } else {
             return animationRepository.findAllByTitleContains(title, pageable).map(mapper::map);
         }
+    }
+
+    public Page<AnimationResponse> listMyAnimations(Pageable pageable) {
+        return animationRepository.findAllByUserId(getUserToken(), pageable).map(mapper::map);
     }
 
     public AnimationDetailedResponse getOneAnimation(UUID id) {
@@ -103,7 +109,7 @@ public class AnimationService {
     public void deleteAnimation(UUID id) throws IOException {
         UUID userId = getUserToken();
         Animation anim = findAnimationById(id);
-        if(anim.getUserId().equals(userId)) {
+        if (anim.getUserId().equals(userId)) {
             commentRepository.deleteAllByAnimationId(id);
             animationRepository.deleteById(id);
             String fileName = id.toString() + ".caff";
@@ -124,7 +130,7 @@ public class AnimationService {
         try {
             Path filePath = resourceLocation.resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
-            if(resource.exists()) {
+            if (resource.exists()) {
                 return resource;
             } else {
                 throw new FileNotFoundException("File not found " + fileName);
@@ -174,7 +180,7 @@ public class AnimationService {
             String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
 
             String fileExtension = "";
-            if(originalFilename.lastIndexOf(".") != -1) {
+            if (originalFilename.lastIndexOf(".") != -1) {
                 fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
             }
 
@@ -193,7 +199,7 @@ public class AnimationService {
         } /*catch (InterruptedException e) {
             throw new CaffplaccException("FILE_UPLOAD_FAILED");
 
-        } */catch (NoSuchAlgorithmException e) {
+        } */ catch (NoSuchAlgorithmException e) {
             throw new CaffplaccException("FILE_UPLOAD_FAILED");
         }
     }
@@ -202,13 +208,51 @@ public class AnimationService {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         InputStream is = file.getInputStream();
         DigestInputStream dis = new DigestInputStream(is, md);
-        while (dis.read() != -1);
+        while (dis.read() != -1) ;
         return DatatypeConverter.printHexBinary(md.digest());
+    }
+
+    public CommentResponse createComment(UUID id, CommentCreateUpdateRequest request) {
+        var animation = findAnimationById(id);
+        var user = userRepository.getById(getUserToken());
+        var comment = new Comment(UUID.randomUUID(), user.getId(), user.getUsername(), request.getContent(), Instant.now(), animation);
+        return mapper.map(commentRepository.save(comment));
+    }
+
+    public CommentResponse updateComment(UUID id, UUID commentId, CommentCreateUpdateRequest request) {
+        Comment comment = null;
+        if (isAdministrator()){
+            comment = commentRepository.getById(commentId);
+        }
+        else {
+            comment = findCommentByIdAndUserId(commentId, getUserToken());
+        }
+        comment.setContent(request.getContent());
+        return mapper.map(commentRepository.save(comment));
+    }
+
+    public void deleteComment(UUID id) {
+        if (isAdministrator()){
+            commentRepository.deleteById(id);
+        }
+        else {
+            var comment = findCommentByIdAndUserId(id, getUserToken());
+            commentRepository.delete(comment);
+        }
+    }
+
+    private Comment findCommentByIdAndUserId(UUID id, UUID userId) {
+        return commentRepository.findByIdAndUserId(id, userId).orElseThrow(() -> new EntityNotFoundException(Comment.class.getName()));
     }
 
     private UUID getUserToken() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var userName = userDetails.getUsername();
         return userRepository.findByUsername(userName).orElseThrow(() -> new EntityNotFoundException(User.class.getName())).getId();
+    }
+
+    private boolean isAdministrator() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
     }
 }
