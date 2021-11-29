@@ -8,6 +8,8 @@ services:
       - database
     networks:
       - survey-network
+    volumes:
+      - ./caffplacc-data/:/var/lib/caffplacc
 
   database:
     image: 'postgres:latest'
