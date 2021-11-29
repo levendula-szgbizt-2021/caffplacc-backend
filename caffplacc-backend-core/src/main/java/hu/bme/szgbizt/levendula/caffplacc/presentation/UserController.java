@@ -30,7 +30,12 @@ public class UserController implements UserProfileIF {
 
     @Override
     @PostMapping
-    public UserResponse changeUserData(UserDto dto) throws CaffplaccException {
+    public UserResponse changeUserData(UserDto dto) {
         return service.changeUserData(dto);
+    }
+
+    @Override
+    public void deleteUserData() throws CaffplaccException {
+        service.deleteUserData();
     }
 }

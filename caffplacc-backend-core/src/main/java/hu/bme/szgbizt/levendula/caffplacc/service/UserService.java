@@ -1,6 +1,8 @@
 package hu.bme.szgbizt.levendula.caffplacc.service;
 
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
+import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
+import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
@@ -18,11 +20,15 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
+    private final AnimationRepository animationRepository;
     private final PasswordEncoder bcryptEncoder;
     private final UserResponseMapper mapper;
 
-    public UserService(UserRepository userRepository, PasswordEncoder bcryptEncoder, UserResponseMapper mapper) {
+    public UserService(UserRepository userRepository, CommentRepository commentRepository, AnimationRepository animationRepository, PasswordEncoder bcryptEncoder, UserResponseMapper mapper) {
         this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
+        this.animationRepository = animationRepository;
         this.bcryptEncoder = bcryptEncoder;
         this.mapper = mapper;
     }
@@ -57,5 +63,12 @@ public class UserService {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var userName = userDetails.getUsername();
         return userRepository.findByUsername(userName).orElseThrow(() -> new EntityNotFoundException(User.class.getName())).getId();
+    }
+
+    public void deleteUserData() {
+        var userId = getUserToken();
+        commentRepository.deleteAllByUserId(userId);
+        animationRepository.deleteAllByUserId(userId); // todo delete comments on all animations
+        userRepository.deleteById(userId);
     }
 }

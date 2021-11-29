@@ -107,7 +107,7 @@ public class AnimationController implements AnimationIF {
     @Override
     @PutMapping("/{id}/comment/{commentId}")
     public CommentResponse updateComment(@PathVariable String id, @PathVariable String commentId, CommentCreateUpdateRequest request) {
-        return service.updateComment(UUID.fromString(id), UUID.fromString(commentId), request);
+        return service.updateComment(UUID.fromString(commentId), request);
     }
 
     @Override

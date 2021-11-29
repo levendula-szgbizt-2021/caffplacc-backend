@@ -85,7 +85,7 @@ public class AdminUserService {
 
     public void deleteUser(UUID id) {
         commentRepository.deleteAllByUserId(id);
-        animationRepository.deleteAllByUserId(id);
+        animationRepository.deleteAllByUserId(id); // todo delete comments on all animations
         userRepository.deleteById(id);
     }
 

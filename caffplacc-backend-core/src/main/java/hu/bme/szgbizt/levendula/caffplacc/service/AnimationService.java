@@ -222,7 +222,7 @@ public class AnimationService {
         return mapper.map(commentRepository.save(comment));
     }
 
-    public CommentResponse updateComment(UUID id, UUID commentId, CommentCreateUpdateRequest request) {
+    public CommentResponse updateComment(UUID commentId, CommentCreateUpdateRequest request) {
         Comment comment = null;
         if (isAdministrator()){
             comment = commentRepository.getById(commentId);
