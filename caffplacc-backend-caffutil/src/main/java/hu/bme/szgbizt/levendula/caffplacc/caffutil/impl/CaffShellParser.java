@@ -1,5 +1,7 @@
-package hu.bme.szgbizt.levendula.caffplacc.caffutil;
+package hu.bme.szgbizt.levendula.caffplacc.caffutil.impl;
 
+import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtil;
+import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtilException;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.data.Caff;
 
 import java.io.*;
@@ -16,10 +18,15 @@ public class CaffShellParser implements CaffUtil {
     }
 
     @Override
-    public Caff parse(byte[] data) throws IOException, InterruptedException {
+    public Caff parse(byte[] data) throws InterruptedException {
         var caff = new Caff();
 
-        Process process = runtime.exec("caff -v");
+        Process process;
+        try {
+            process = runtime.exec("caff -v");
+        } catch (IOException ex) {
+            throw new CaffUtilException("Failed to execute caff command", ex);
+        }
 
         /*
          * This is really confusing, but input and output are from JAVA's perspective; ie input is what the process
@@ -28,8 +35,12 @@ public class CaffShellParser implements CaffUtil {
 
         /* write to input */
         OutputStream outputStream = process.getOutputStream();
-        outputStream.write(data);
-        outputStream.close();
+        try {
+            outputStream.write(data);
+            outputStream.close();
+        } catch (IOException ex) {
+            throw new CaffUtilException("Failed to write data to caff process", ex);
+        }
 
         /* read error */
         new Thread(() -> {
@@ -48,14 +59,17 @@ public class CaffShellParser implements CaffUtil {
             }
         }).start();
 
-        process.waitFor();
+        int result = process.waitFor();
+        if (result != 0)
+            throw new CaffUtilException("CAFF parse failure");
+
         return caff;
     }
 
     /* WARNING: very fragile text output parsing */
     private void parseLine(String line, Caff caff) {
         if (line.contains("count"))
-            caff.setNFrame(Long.parseUnsignedLong(getLineValuePart(line)));
+            caff.setFrameCount(Long.parseUnsignedLong(getLineValuePart(line)));
         else if (line.contains("date"))
             caff.setDate(LocalDateTime.parse(getLineValuePart(line), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         else if (line.contains("name"))
