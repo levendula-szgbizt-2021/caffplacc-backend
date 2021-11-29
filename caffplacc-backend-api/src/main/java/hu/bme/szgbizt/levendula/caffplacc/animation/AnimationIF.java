@@ -22,11 +22,11 @@ public interface AnimationIF {
     @GetMapping("/{id}")
     AnimationDetailedResponse getOneAnimation(@PathVariable String id);
 
-    @ApiOperation(value = "createSurvey", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint is used to upload an animation to the server.")
+    @ApiOperation(value = "createAnimation", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint is used to upload an animation to the server.")
     @PostMapping
     AnimationResponse createAnimation(@RequestParam String title, @RequestParam("file") MultipartFile file);
 
-    @ApiOperation(value = "updateSurvey", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by a user to change the title of one of their animations.")
+    @ApiOperation(value = "updateAnimation", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by a user to change the title of one of their animations.")
     @PutMapping("/{id}")
     AnimationResponse updateAnimation(@PathVariable String id, @RequestBody AnimationUpdateRequest request);
 
