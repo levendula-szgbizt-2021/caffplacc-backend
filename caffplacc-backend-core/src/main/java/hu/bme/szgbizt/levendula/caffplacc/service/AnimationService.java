@@ -1,9 +1,9 @@
 package hu.bme.szgbizt.levendula.caffplacc.service;
 
 import hu.bme.szgbizt.levendula.caffplacc.animation.*;
-import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffShellParser;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtil;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.data.Caff;
+import hu.bme.szgbizt.levendula.caffplacc.caffutil.impl.CaffShellParser;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Animation;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Comment;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
