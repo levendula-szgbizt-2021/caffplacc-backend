@@ -1,8 +1,8 @@
 server:
   port: 8081
 files:
-  upload-dir: "./files"
-  preview-dir: "./previews"
+  upload-dir: "/var/lib/caffplacc/files"
+  preview-dir: "/var/lib/caffplacc/previews"
 spring:
   data:
     web:
