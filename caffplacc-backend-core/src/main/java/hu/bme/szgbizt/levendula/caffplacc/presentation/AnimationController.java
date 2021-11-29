@@ -113,6 +113,6 @@ public class AnimationController implements AnimationIF {
     @Override
     @DeleteMapping("/{id}/comment/{commentId}")
     public void deleteComment(@PathVariable String id, @PathVariable String commentId) {
-        service.deleteComment(UUID.fromString(id));
+        service.deleteComment(UUID.fromString(commentId));
     }
 }
