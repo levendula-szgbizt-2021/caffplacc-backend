@@ -2,6 +2,7 @@ package hu.bme.szgbizt.levendula.caffplacc.service;
 
 import hu.bme.szgbizt.levendula.caffplacc.animation.*;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtil;
+import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtilException;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.data.Caff;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.impl.CaffShellParser;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Animation;
@@ -200,11 +201,7 @@ public class AnimationService {
 
         Animation anim = new Animation();
         try {
-            //Caff caff = caffUtil.parse(file.getBytes());
-            Caff caff = new Caff();
-            caff.setCreator("Jancsi");
-            caff.setDate(LocalDateTime.now());
-            caff.setGif(file.getBytes());
+            Caff caff = caffUtil.parse(file.getBytes());
 
             UUID userId = getUserToken();
             User user = userRepository.getById(userId);
@@ -239,12 +236,7 @@ public class AnimationService {
 
             log.info("Successfully created new animation entity with Id: {}", anim.getId());
             return anim;
-        } catch (IOException e) {
-            throw new CaffplaccException("FILE_UPLOAD_FAILED");
-        } /*catch (InterruptedException e) {
-            throw new CaffplaccException("FILE_UPLOAD_FAILED");
-
-        } */ catch (NoSuchAlgorithmException e) {
+        } catch (IOException | InterruptedException | NoSuchAlgorithmException | CaffUtilException e) {
             throw new CaffplaccException("FILE_UPLOAD_FAILED");
         }
     }

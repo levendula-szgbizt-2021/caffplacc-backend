@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 
-@Disabled("Requires caff library and only works on UNIX/Linux anyway")
 class CaffJnaParserTest {
 
     private CaffUtil parser;
