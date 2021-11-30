@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 public interface AdminUserIF {
 
     @ApiOperation(value = "listUsers", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by an administrator privileges to list the registered users.")
@@ -18,11 +20,11 @@ public interface AdminUserIF {
 
     @ApiOperation(value = "createUser", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by an administrator to create a new user or administrator.")
     @PostMapping
-    AdminUserResponse createUser(@RequestBody UserCreateUpdateRequest request);
+    AdminUserResponse createUser(@RequestBody @Valid UserCreateUpdateRequest request);
 
     @ApiOperation(value = "updateUser", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by an administrator to update the information of any one user.")
     @PutMapping("/{id}")
-    AdminUserResponse updateUser(@PathVariable String id, @RequestBody UserCreateUpdateRequest request);
+    AdminUserResponse updateUser(@PathVariable String id, @RequestBody @Valid UserCreateUpdateRequest request);
 
     @ApiOperation(value = "deleteUser", notes = "This endpoint can be called by an administrator to delete any one user.")
     @DeleteMapping("/{id}")

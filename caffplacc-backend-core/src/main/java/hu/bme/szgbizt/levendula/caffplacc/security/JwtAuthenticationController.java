@@ -8,6 +8,8 @@ import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/api/auth")
@@ -20,12 +22,12 @@ public class JwtAuthenticationController implements UserAuthIF {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> saveUser(@RequestBody UserDto user) throws CaffplaccException {
+    public ResponseEntity<?> saveUser(@RequestBody @Valid UserDto user) throws CaffplaccException {
         return ResponseEntity.ok(saveUserService.save(user));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws CaffplaccException {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody @Valid JwtRequest authenticationRequest) throws CaffplaccException {
         return ResponseEntity.ok(saveUserService.login(authenticationRequest));
     }
 

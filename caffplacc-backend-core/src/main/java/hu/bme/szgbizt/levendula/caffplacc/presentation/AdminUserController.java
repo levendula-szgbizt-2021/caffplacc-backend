@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 @RestController
@@ -36,13 +37,13 @@ public class AdminUserController implements AdminUserIF {
 
     @Override
     @PostMapping
-    public AdminUserResponse createUser(@RequestBody UserCreateUpdateRequest request) {
+    public AdminUserResponse createUser(@RequestBody @Valid UserCreateUpdateRequest request) {
         return service.createUserByAdmin(request);
     }
 
     @Override
     @PutMapping("/{id}")
-    public AdminUserResponse updateUser(@PathVariable String id, @RequestBody UserCreateUpdateRequest request) {
+    public AdminUserResponse updateUser(@PathVariable String id, @RequestBody @Valid UserCreateUpdateRequest request) {
         return service.updateUserByAdmin(UUID.fromString(id), request);
     }
 
