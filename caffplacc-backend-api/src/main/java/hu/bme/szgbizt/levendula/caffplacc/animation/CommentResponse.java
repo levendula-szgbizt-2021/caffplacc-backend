@@ -15,6 +15,7 @@ import java.time.Instant;
 public class CommentResponse {
 
     String id;
+    String userId;
     String userName;
     String content;
     Instant date;

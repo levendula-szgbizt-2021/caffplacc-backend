@@ -6,9 +6,7 @@ import hu.bme.szgbizt.levendula.caffplacc.service.UserService;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserProfileIF;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @PreAuthorize("hasRole('ROLE_USER')")
@@ -22,8 +20,20 @@ public class UserController implements UserProfileIF {
     }
 
     @Override
+    @GetMapping
+    public UserResponse getUserData() throws CaffplaccException {
+        return service.getUserData();
+    }
+
+    @Override
     @PostMapping
-    public UserResponse changeUserData(UserDto dto) throws CaffplaccException {
+    public UserResponse changeUserData(UserDto dto) {
         return service.changeUserData(dto);
+    }
+
+    @Override
+    @DeleteMapping
+    public void deleteUserData() throws CaffplaccException {
+        service.deleteUserData();
     }
 }

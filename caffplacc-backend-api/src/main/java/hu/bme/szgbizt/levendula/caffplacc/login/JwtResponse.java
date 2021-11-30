@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -14,4 +16,7 @@ public class JwtResponse {
 
     final String token;
     final String refreshToken;
+    final String userId;
+    final String username;
+    final List<String> roles;
 }

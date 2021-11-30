@@ -5,6 +5,7 @@ target/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+caffplacc-data/
 
 ### STS ###
 .apt_generated
@@ -29,6 +30,7 @@ out/
 .h2data
 h2data
 db-data
+logs
 
 ### NetBeans ###
 /nbproject/private/

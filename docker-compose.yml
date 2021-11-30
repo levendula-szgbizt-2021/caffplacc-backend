@@ -7,7 +7,9 @@ services:
     depends_on:
       - database
     networks:
-      - survey-network
+      - caffplacc-network
+    volumes:
+      - ./caffplacc-data/:/var/lib/caffplacc
 
   database:
     image: 'postgres:latest'
@@ -20,9 +22,8 @@ services:
     volumes:
       - ./db-data/:/var/lib/postgresql/data
     networks:
-      - survey-network
+      - caffplacc-network
 
 networks:
-  survey-network:
+  caffplacc-network:
     driver: bridge
-    

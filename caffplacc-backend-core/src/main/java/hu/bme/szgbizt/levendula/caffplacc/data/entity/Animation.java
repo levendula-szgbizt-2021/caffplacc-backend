@@ -3,6 +3,7 @@ package hu.bme.szgbizt.levendula.caffplacc.data.entity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -26,6 +27,6 @@ public class Animation {
     String hash;
     Instant uploadDate;
     String title;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE)
     List<Comment> comments;
 }

@@ -18,7 +18,7 @@ import java.time.Instant;
 public class CaffplaccExceptionHandler {
 
     @ExceptionHandler(CaffplaccException.class)
-    public final ResponseEntity<CaffplaccError> handleSurveyException(CaffplaccException e, WebRequest request) {
+    public final ResponseEntity<CaffplaccError> handleCaffplaccException(CaffplaccException e, WebRequest request) {
         CaffplaccError error = new CaffplaccError(
                 Instant.now(),
                 e.getStatusCode(),

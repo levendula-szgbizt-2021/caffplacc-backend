@@ -12,12 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static hu.bme.szgbizt.levendula.caffplacc.security.SecurityConstants.*;
+
 @Service
 public class JwtTokenUtil implements Serializable {
-    private static final long JWT_TOKEN_VALIDITY = SecurityConstants.EXPIRATION_TIME;
-    private static  final long JWT_REFRESH_TOKEN_VALIDITY = SecurityConstants.REFRESH_EXPIRATION_TIME;
     private static final long serialVersionUID = -2550185165626007488L;
-    private static final String SECRET = SecurityConstants.SECRET;
 
     //retrieve username from jwt token
     public String getUsernameFromToken(String token) {
@@ -49,19 +48,14 @@ public class JwtTokenUtil implements Serializable {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userDetails.getAuthorities());
-        return doGenerateToken(claims, userDetails.getUsername(), JWT_TOKEN_VALIDITY);
+        return doGenerateToken(claims, userDetails.getUsername(), EXPIRATION_TIME);
     }
 
-    public String generateRefreshToken(UserDetails userDetails){
+    public String generateRefreshToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        return  doGenerateToken(claims, userDetails.getUsername(), JWT_REFRESH_TOKEN_VALIDITY);
+        return doGenerateToken(claims, userDetails.getUsername(), REFRESH_EXPIRATION_TIME);
     }
 
-    //while creating the token -
-    //1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID
-    //2. Sign the JWT using the HS512 algorithm and secret key.
-    //3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
-    //   compaction of the JWT to a URL-safe string
     private String doGenerateToken(Map<String, Object> claims, String subject, long validity) {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
@@ -69,13 +63,12 @@ public class JwtTokenUtil implements Serializable {
                 .signWith(SignatureAlgorithm.HS512, SECRET).compact();
     }
 
-    //validate token
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public boolean validateRefreshToken(String refreshToken){
+    public boolean validateRefreshToken(String refreshToken) {
         return !isTokenExpired(refreshToken);
     }
 }

@@ -16,6 +16,7 @@ import java.util.List;
 public class AnimationDetailedResponse {
 
     String id;
+    String userId;
     String uploaderUserName;
     double fileSizeInMb;
     String hash;

@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 public class AnimationResponse {
 
     String id;
+    String uploaderUserName;
     double fileSizeInMb;
     String title;
 }

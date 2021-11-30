@@ -1,27 +1,29 @@
 package hu.bme.szgbizt.levendula.caffplacc.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
+@Slf4j
 @Service
 public class StorageService {
-    void store(MultipartFile file){
-        ;
-    }
 
-    Stream<Path> loadAll(){
-        return null;
-    }
-
-    Path load(String filename){
-        return null;
-    }
-
-    Resource loadAsResource(String filename){
-        return null;
+    public Resource getResource(String fileName, Path resourceLocation) throws FileNotFoundException {
+        try {
+            Path filePath = resourceLocation.resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists()) {
+                return resource;
+            } else {
+                throw new FileNotFoundException("File not found " + fileName);
+            }
+        } catch (MalformedURLException | FileNotFoundException ex) {
+            throw new FileNotFoundException("File not found " + fileName);
+        }
     }
 }

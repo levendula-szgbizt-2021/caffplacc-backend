@@ -16,5 +16,7 @@ public interface AnimationRepository extends JpaRepository<Animation, UUID> {
 
     Page<Animation> findAllByTitleContains(String title, Pageable pageable);
 
+    Page<Animation> findAllByUserId(UUID id, Pageable pageable);
+
     void deleteAllByUserId(UUID id);
 }
