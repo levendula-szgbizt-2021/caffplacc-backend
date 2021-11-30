@@ -18,9 +18,7 @@ public class CaffJnaParser implements CaffUtil {
         if (result == null)
             throw new CaffUtilException("CAFF parse failure");
 
-        Caff caff = ConversionUtil.toCaff(ccaff);
-
-        CaffLibrary.INSTANCE.caff_destroy(ccaff);
-        return caff;
+        /* TODO does JNA free memory? */
+        return ConversionUtil.toCaff(ccaff);
     }
 }
