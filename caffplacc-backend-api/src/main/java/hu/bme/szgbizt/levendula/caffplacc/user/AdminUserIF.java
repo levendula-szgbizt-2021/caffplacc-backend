@@ -10,19 +10,19 @@ public interface AdminUserIF {
 
     @ApiOperation(value = "listUsers", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by an administrator privileges to list the registered users.")
     @GetMapping
-    Page<UserResponse> listUsers(@RequestParam(required = false, name = "username") String username, Pageable pageable);
+    Page<AdminUserResponse> listUsers(@RequestParam(required = false, name = "username") String username, Pageable pageable);
 
     @ApiOperation(value = "getOneUser", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by an administrator to get one user by their userId.")
     @GetMapping("/{id}")
-    UserResponse getOneUser(@PathVariable String id);
+    AdminUserResponse getOneUser(@PathVariable String id);
 
     @ApiOperation(value = "createUser", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by an administrator to create a new user or administrator.")
     @PostMapping
-    UserResponse createUser(@RequestBody UserCreateUpdateRequest request);
+    AdminUserResponse createUser(@RequestBody UserCreateUpdateRequest request);
 
     @ApiOperation(value = "updateUser", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint can be called by an administrator to update the information of any one user.")
     @PutMapping("/{id}")
-    UserResponse updateUser(@PathVariable String id, @RequestBody UserCreateUpdateRequest request);
+    AdminUserResponse updateUser(@PathVariable String id, @RequestBody UserCreateUpdateRequest request);
 
     @ApiOperation(value = "deleteUser", notes = "This endpoint can be called by an administrator to delete any one user.")
     @DeleteMapping("/{id}")

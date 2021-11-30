@@ -4,9 +4,11 @@ import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.UserRole;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
+import hu.bme.szgbizt.levendula.caffplacc.data.repository.RefreshTokenRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.UserResponseMapper;
+import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserResponse;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateUpdateRequest;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,9 @@ class AdminUserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Mock
     private CommentRepository commentRepository;
@@ -57,7 +61,7 @@ class AdminUserServiceTest {
         Page<User> page = Page.empty();
         Pageable pageable = PageRequest.of(0, 5);
         when(userRepository.findAll(pageable)).thenReturn(page);
-        Page<UserResponse> response = adminUserService.listUsers(null, pageable);
+        Page<AdminUserResponse> response = adminUserService.listUsers(null, pageable);
         verify(userRepository, times(1)).findAll(pageable);
         verify(userRepository, times(0)).findAllByUsernameContains(anyString(), any());
     }
@@ -67,30 +71,30 @@ class AdminUserServiceTest {
         Page<User> page = Page.empty();
         Pageable pageable = PageRequest.of(0, 5);
         when(userRepository.findAllByUsernameContains("test", pageable)).thenReturn(page);
-        Page<UserResponse> response = adminUserService.listUsers("test", pageable);
+        Page<AdminUserResponse> response = adminUserService.listUsers("test", pageable);
         verify(userRepository, times(0)).findAll(pageable);
         verify(userRepository, times(1)).findAllByUsernameContains(anyString(), any());
     }
 
     @Test
     void getOneUser() {
-        UserResponse userResponse = new UserResponse("id", "username", "email");
+        AdminUserResponse adminUserResponse = new AdminUserResponse("id", "username", "email", false);
         User mockUser = mock(User.class);
         when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(mockUser));
-        when(mapper.map(mockUser)).thenReturn(userResponse);
-        UserResponse response = adminUserService.getOneUser(UUID.randomUUID());
+        when(mapper.mapToAdminUserResponse(mockUser)).thenReturn(adminUserResponse);
+        AdminUserResponse response = adminUserService.getOneUser(UUID.randomUUID());
         verify(userRepository, times(1)).findById(any(UUID.class));
     }
 
     @Test
     void createUserIfNotAdmin() {
-        UserResponse userResponse = new UserResponse("id", "username", "email");
+        AdminUserResponse adminUserResponse = new AdminUserResponse("id", "username", "email", false);
         UserCreateUpdateRequest request = new UserCreateUpdateRequest("john", "pass", "a@b.c", false);
         when(bcryptEncoder.encode(anyString())).thenReturn("SECRET");
         when(userRepository.save(any(User.class))).thenReturn(new User());
-        when(mapper.map(any(User.class))).thenReturn(userResponse);
+        when(mapper.mapToAdminUserResponse(any(User.class))).thenReturn(adminUserResponse);
         ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
-        UserResponse response = adminUserService.createUser(request);
+        AdminUserResponse response = adminUserService.createUser(request);
         verify(bcryptEncoder, times(1)).encode("pass");
         verify(userRepository, times(1)).save(argument.capture());
         assertEquals("john", argument.getValue().getUsername());
@@ -101,13 +105,13 @@ class AdminUserServiceTest {
 
     @Test
     void createUserIfAdmin() {
-        UserResponse userResponse = new UserResponse("id", "username", "email");
+        AdminUserResponse adminUserResponse = new AdminUserResponse("id", "username", "email", true);
         UserCreateUpdateRequest request = new UserCreateUpdateRequest("john", "pass", "a@b.c", true);
         when(bcryptEncoder.encode(anyString())).thenReturn("SECRET");
         when(userRepository.save(any(User.class))).thenReturn(new User());
-        when(mapper.map(any(User.class))).thenReturn(userResponse);
+        when(mapper.mapToAdminUserResponse(any(User.class))).thenReturn(adminUserResponse);
         ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
-        UserResponse response = adminUserService.createUser(request);
+        AdminUserResponse response = adminUserService.createUser(request);
         verify(bcryptEncoder, times(1)).encode("pass");
         verify(userRepository, times(1)).save(argument.capture());
         assertEquals("john", argument.getValue().getUsername());
@@ -124,10 +128,8 @@ class AdminUserServiceTest {
         when(userRepository.findById(mockID)).thenReturn(Optional.of(mockUser));
         when(userRepository.findByUsername("test")).thenReturn(Optional.empty());
         when(userRepository.save(mockUser)).thenReturn(mockUser);
-        when(mapper.map(mockUser)).thenReturn(new UserResponse());
-        UserResponse response = adminUserService.updateUser(mockID, request);
+        AdminUserResponse response = adminUserService.updateUser(mockID, request);
         verify(mockUser, times(1)).setUsername("test");
-        verify(mockUser, times(1)).setRoles(List.of(UserRole.ROLE_USER));
         verify(mockUser, times(0)).setPassword(anyString());
         verify(mockUser, times(0)).setEmail(anyString());
     }
@@ -139,7 +141,9 @@ class AdminUserServiceTest {
         User mockUser = mock(User.class);
         when(userRepository.findById(mockID)).thenReturn(Optional.of(mockUser));
         when(userRepository.findByUsername("test")).thenReturn(Optional.of(new User()));
-        assertThrows(CaffplaccException.class, () -> {adminUserService.updateUser(mockID, request);});
+        assertThrows(CaffplaccException.class, () -> {
+            adminUserService.updateUser(mockID, request);
+        });
     }
 
     @Test
@@ -150,10 +154,8 @@ class AdminUserServiceTest {
         when(userRepository.findById(mockID)).thenReturn(Optional.of(mockUser));
         when(bcryptEncoder.encode("pass")).thenReturn("SECRET");
         when(userRepository.save(mockUser)).thenReturn(mockUser);
-        when(mapper.map(mockUser)).thenReturn(new UserResponse());
-        UserResponse response = adminUserService.updateUser(mockID, request);
+        AdminUserResponse response = adminUserService.updateUser(mockID, request);
         verify(mockUser, times(0)).setUsername(anyString());
-        verify(mockUser, times(1)).setRoles(List.of(UserRole.ROLE_USER));
         verify(mockUser, times(1)).setPassword("SECRET");
         verify(mockUser, times(0)).setEmail(anyString());
     }
@@ -165,10 +167,8 @@ class AdminUserServiceTest {
         User mockUser = mock(User.class);
         when(userRepository.findById(mockID)).thenReturn(Optional.of(mockUser));
         when(userRepository.save(mockUser)).thenReturn(mockUser);
-        when(mapper.map(any(User.class))).thenReturn(new UserResponse());
-        UserResponse response = adminUserService.updateUser(mockID, request);
+        AdminUserResponse response = adminUserService.updateUser(mockID, request);
         verify(mockUser, times(0)).setUsername(anyString());
-        verify(mockUser, times(1)).setRoles(List.of(UserRole.ROLE_USER));
         verify(mockUser, times(0)).setPassword(anyString());
         verify(mockUser, times(1)).setEmail("a@b.c");
     }
@@ -180,10 +180,8 @@ class AdminUserServiceTest {
         User mockUser = mock(User.class);
         when(userRepository.findById(mockID)).thenReturn(Optional.of(mockUser));
         when(userRepository.save(mockUser)).thenReturn(mockUser);
-        when(mapper.map(mockUser)).thenReturn(new UserResponse());
-        UserResponse response = adminUserService.updateUser(mockID, request);
+        AdminUserResponse response = adminUserService.updateUser(mockID, request);
         verify(mockUser, times(0)).setUsername(anyString());
-        verify(mockUser, times(1)).setRoles(List.of(UserRole.ROLE_USER, UserRole.ROLE_ADMIN));
         verify(mockUser, times(0)).setPassword(anyString());
         verify(mockUser, times(1)).setEmail("a@b.c");
     }

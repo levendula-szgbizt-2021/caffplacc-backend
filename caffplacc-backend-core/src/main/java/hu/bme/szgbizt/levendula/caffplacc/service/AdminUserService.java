@@ -4,11 +4,13 @@ import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.UserRole;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
+import hu.bme.szgbizt.levendula.caffplacc.data.repository.RefreshTokenRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.UserResponseMapper;
+import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserResponse;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateUpdateRequest;
-import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,38 +18,34 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class AdminUserService {
 
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final CommentRepository commentRepository;
     private final AnimationRepository animationRepository;
     private final UserResponseMapper mapper;
     private final PasswordEncoder bcryptEncoder;
 
-    public AdminUserService(UserRepository userRepository, CommentRepository commentRepository, AnimationRepository animationRepository, UserResponseMapper mapper, PasswordEncoder bcryptEncoder) {
-        this.userRepository = userRepository;
-        this.commentRepository = commentRepository;
-        this.animationRepository = animationRepository;
-        this.mapper = mapper;
-        this.bcryptEncoder = bcryptEncoder;
-    }
 
-    public Page<UserResponse> listUsers(String username, Pageable pageable) {
+    public Page<AdminUserResponse> listUsers(String username, Pageable pageable) {
         if (username == null) {
-            return userRepository.findAll(pageable).map(mapper::map);
+            return userRepository.findAll(pageable).map(mapper::mapToAdminUserResponse);
         } else {
-            return userRepository.findAllByUsernameContains(username, pageable).map(mapper::map);
+            return userRepository.findAllByUsernameContains(username, pageable).map(mapper::mapToAdminUserResponse);
         }
     }
 
-    public UserResponse getOneUser(UUID id) {
-        return mapper.map(findUserById(id));
+    public AdminUserResponse getOneUser(UUID id) {
+        return mapper.mapToAdminUserResponse(findUserById(id));
     }
 
-    public UserResponse createUser(UserCreateUpdateRequest request) {
+    public AdminUserResponse createUser(UserCreateUpdateRequest request) {
         var newUser = new User();
         newUser.setUsername(request.getUsername());
         newUser.setPassword(bcryptEncoder.encode(request.getPassword()));
@@ -57,12 +55,12 @@ public class AdminUserService {
         } else {
             newUser.setRoles(List.of(UserRole.ROLE_USER));
         }
-        return mapper.map(userRepository.save(newUser));
+        return mapper.mapToAdminUserResponse(userRepository.save(newUser));
     }
 
-    public UserResponse updateUser(UUID id, UserCreateUpdateRequest request) {
+    public AdminUserResponse updateUser(UUID id, UserCreateUpdateRequest request) {
         var user = findUserById(id);
-        if (request.getUsername() != null) {
+        if (request.getUsername() != null || !Objects.equals(request.getUsername(), user.getUsername())) {
             if (userRepository.findByUsername(request.getUsername()).isPresent()) {
                 throw new CaffplaccException("That username is taken!");
             } else {
@@ -75,15 +73,13 @@ public class AdminUserService {
         if (request.getEmail() != null) {
             user.setEmail(request.getEmail());
         }
-        if (request.isAdmin()) {
-            user.setRoles(List.of(UserRole.ROLE_USER, UserRole.ROLE_ADMIN));
-        } else {
-            user.setRoles(List.of(UserRole.ROLE_USER));
-        }
-        return mapper.map(userRepository.save(user));
+        userRepository.save(user);
+        return mapper.mapToAdminUserResponse(user);
     }
 
     public void deleteUser(UUID id) {
+        var token = refreshTokenRepository.findByUserId(id);
+        token.ifPresent(refreshTokenRepository::delete);
         commentRepository.deleteAllByUserId(id);
         animationRepository.deleteAllByUserId(id); // todo delete comments on all animations
         userRepository.deleteById(id);
