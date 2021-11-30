@@ -1,6 +1,6 @@
 package hu.bme.szgbizt.levendula.caffplacc.login;
 
-import hu.bme.szgbizt.levendula.caffplacc.Password;
+import hu.bme.szgbizt.levendula.caffplacc.validation.Password;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

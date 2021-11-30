@@ -1,13 +1,13 @@
 package hu.bme.szgbizt.levendula.caffplacc.login;
 
-import hu.bme.szgbizt.levendula.caffplacc.Password;
+import hu.bme.szgbizt.levendula.caffplacc.validation.Password;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.Size;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +17,7 @@ public class UserDto {
 
     String username;
     @Password
-    @Size(min = 8, message = "Password size must be at least 8 characters.")
+    @NotEmpty
     String password;
     String email;
 }

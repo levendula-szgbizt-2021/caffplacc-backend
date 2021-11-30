@@ -3,6 +3,7 @@ package hu.bme.szgbizt.levendula.caffplacc.presentation;
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
 import hu.bme.szgbizt.levendula.caffplacc.service.UserService;
+import hu.bme.szgbizt.levendula.caffplacc.user.UserDataUpdateRequest;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserProfileIF;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,8 +28,8 @@ public class UserController implements UserProfileIF {
 
     @Override
     @PostMapping
-    public UserResponse changeUserData(UserDto dto) {
-        return service.changeUserData(dto);
+    public UserResponse changeUserData(UserDataUpdateRequest request) {
+        return service.changeUserData(request);
     }
 
     @Override

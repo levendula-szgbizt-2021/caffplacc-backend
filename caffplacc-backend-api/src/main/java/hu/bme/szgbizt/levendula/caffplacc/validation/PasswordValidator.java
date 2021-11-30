@@ -1,4 +1,4 @@
-package hu.bme.szgbizt.levendula.caffplacc;
+package hu.bme.szgbizt.levendula.caffplacc.validation;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -14,7 +14,12 @@ public class PasswordValidator implements ConstraintValidator<Password, Object> 
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext constraintValidatorContext) {
+        // If there was no password set, it does not need to be updated and can be left null
         if (value == null) {
+            return true;
+        }
+        // Check if the password is 8 characters or longer.
+        if (value.toString().length() < 8) {
             return false;
         }
         // ReGex to check if a string contains uppercase, lowercase character & numeric value

@@ -1,6 +1,5 @@
 package hu.bme.szgbizt.levendula.caffplacc.service;
 
-import hu.bme.szgbizt.levendula.caffplacc.data.entity.Animation;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.UserRole;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
@@ -10,9 +9,8 @@ import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.UserResponseMapper;
+import hu.bme.szgbizt.levendula.caffplacc.user.UserDataUpdateRequest;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,15 +25,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -89,7 +85,7 @@ class UserServiceTest {
 
     @Test
     void changeUserDataOnlyUsernameThatExists() {
-        UserDto mockUserDto = new UserDto("test1", null, null);
+        var mockUserDto = new UserDataUpdateRequest("test1", null, null);
         User mockUser = new User(UUID.randomUUID(), "test", "pass", "email", List.of(UserRole.ROLE_USER));
         UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(mockUser));
@@ -98,13 +94,15 @@ class UserServiceTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         securityContext.setAuthentication(authentication);
         SecurityContextHolder.setContext(securityContext);
-        assertThrows(CaffplaccException.class, () -> {userService.changeUserData(mockUserDto);});
+        assertThrows(CaffplaccException.class, () -> {
+            userService.changeUserData(mockUserDto);
+        });
     }
 
     @Test
     void changeUserDataOnlyUsernameThatDoesNotExists() {
         UserResponse userResponse = new UserResponse("id", "username", "email");
-        UserDto mockUserDto = new UserDto("test2", null, null);
+        var mockUserDto = new UserDataUpdateRequest("test2", null, null);
         User mockUser = mock(User.class);
         when(mockUser.getId()).thenReturn(UUID.randomUUID());
         UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));
@@ -126,7 +124,7 @@ class UserServiceTest {
     @Test
     void changeUserDataOnlyPassword() {
         UserResponse userResponse = new UserResponse("id", "username", "email");
-        UserDto mockUserDto = new UserDto(null, "pass2", null);
+        var mockUserDto = new UserDataUpdateRequest(null, "pass2", null);
         User mockUser = mock(User.class);
         when(mockUser.getId()).thenReturn(UUID.randomUUID());
         UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));
@@ -148,7 +146,7 @@ class UserServiceTest {
     @Test
     void changeUserDataOnlyEmail() {
         UserResponse userResponse = new UserResponse("id", "username", "email");
-        UserDto mockUserDto = new UserDto(null, null, "a@b.c");
+        var mockUserDto = new UserDataUpdateRequest(null, null, "a@b.c");
         User mockUser = mock(User.class);
         when(mockUser.getId()).thenReturn(UUID.randomUUID());
         UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));

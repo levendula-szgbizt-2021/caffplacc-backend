@@ -11,6 +11,7 @@ import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.UserResponseMapper;
 import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserResponse;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateUpdateRequest;
+import hu.bme.szgbizt.levendula.caffplacc.user.UserDataUpdateRequest;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +71,7 @@ public class UserService {
         return mapper.mapToAdminUserResponse(userRepository.save(newUser));
     }
 
-    public UserResponse changeUserData(UserDto request) {
+    public UserResponse changeUserData(UserDataUpdateRequest request) {
         var userId = getUserToken();
         log.info("Updating user data for userId: {}", userId);
         var user = updateUser(userId, new UserCreateUpdateRequest(request.getUsername(), request.getPassword(), request.getEmail(), false));
