@@ -119,7 +119,6 @@ public class AnimationService {
 
         var animation = findAnimationById(id);
         if (animation.getUserId().equals(userId)) {
-            commentRepository.deleteAllByAnimationId(id);
             animationRepository.deleteById(id);
             String fileName = id + ".caff";
             String previewName = id + ".gif";

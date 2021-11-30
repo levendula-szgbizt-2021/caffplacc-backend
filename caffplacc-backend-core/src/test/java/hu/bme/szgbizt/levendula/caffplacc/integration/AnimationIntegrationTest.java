@@ -1,9 +1,7 @@
 package hu.bme.szgbizt.levendula.caffplacc.integration;
 
 import hu.bme.szgbizt.levendula.caffplacc.CaffplaccApplication;
-import hu.bme.szgbizt.levendula.caffplacc.animation.AnimationDetailedResponse;
-import hu.bme.szgbizt.levendula.caffplacc.animation.AnimationResponse;
-import hu.bme.szgbizt.levendula.caffplacc.animation.AnimationUpdateRequest;
+import hu.bme.szgbizt.levendula.caffplacc.animation.*;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Animation;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.UserRole;
@@ -15,7 +13,6 @@ import hu.bme.szgbizt.levendula.caffplacc.security.SecurityConstants;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,6 +84,10 @@ class AnimationIntegrationTest {
 
     @BeforeEach
     void clear() {
+        commentRepository.deleteAll();
+        animationRepository.deleteAll();
+        userRepository.deleteAll();
+        user = null;
         user = new User();
         user.setRoles(List.of(UserRole.ROLE_USER));
         user.setPassword("secret");
@@ -95,13 +96,6 @@ class AnimationIntegrationTest {
         user = userRepository.save(user);
         userId = user.getId();
 
-    }
-
-    @AfterEach
-    void clearAll() {
-        animationRepository.deleteAll();
-        userRepository.deleteAll();
-        user = null;
     }
 
     @AfterTestClass
@@ -213,6 +207,7 @@ class AnimationIntegrationTest {
 
         ResponseEntity<AnimationDetailedResponse> getResponse1 = restTemplate.getForEntity(path + "/" + entity.getId(), AnimationDetailedResponse.class);
         Assertions.assertTrue(getResponse1.getStatusCode().is2xxSuccessful());
+        Assertions.assertEquals(0, Objects.requireNonNull(getResponse1.getBody()).getComments().size());
 
         restTemplate.delete(path + "/" + entity.getId());
 
@@ -232,17 +227,64 @@ class AnimationIntegrationTest {
 
     @Test
     void testCreateCommentForAnimation() {
-        //    CommentResponse createComment(@PathVariable String id, @RequestBody CommentCreateUpdateRequest request);
+        String comment = "testContent";
+        var entity = animationRepository.save(new Animation(
+                UUID.fromString("3f6be0e9-f275-4698-a1c2-0d4baede541e"), UUID.fromString("312401f2-37db-427b-86ce-c10ab9675916"),
+                "TesztElek", 11, "TesztHash1", Instant.EPOCH, "TesztTitle", List.of()));
+
+        ResponseEntity<AnimationDetailedResponse> getResponse1 = restTemplate.getForEntity(path + "/" + entity.getId(), AnimationDetailedResponse.class);
+        Assertions.assertTrue(getResponse1.getStatusCode().is2xxSuccessful());
+        Assertions.assertEquals(0, Objects.requireNonNull(getResponse1.getBody()).getComments().size());
+
+        restTemplate.exchange(path + "/" + entity.getId() + "/comment", HttpMethod.POST, new HttpEntity<>(new CommentCreateUpdateRequest(comment)), CommentResponse.class);
+
+        ResponseEntity<AnimationDetailedResponse> getResponse2 = restTemplate.getForEntity(path + "/" + entity.getId(), AnimationDetailedResponse.class);
+        Assertions.assertEquals(1, Objects.requireNonNull(getResponse2.getBody()).getComments().size());
+        Assertions.assertEquals(comment, getResponse2.getBody().getComments().get(0).getContent());
     }
 
     @Test
     void testUpdateComment() {
-        //    CommentResponse updateComment(@PathVariable String id, @PathVariable String commentId, @RequestBody CommentCreateUpdateRequest request);
+        String oldComment = "Old Comment";
+        String newComment = "New Comment";
+        var entity = animationRepository.save(new Animation(
+                UUID.fromString("3f6be0e9-f275-4698-a1c2-0d4baede541e"), UUID.fromString("312401f2-37db-427b-86ce-c10ab9675916"),
+                "TesztElek", 11, "TesztHash1", Instant.EPOCH, "TesztTitle", List.of()));
+
+        ResponseEntity<AnimationDetailedResponse> getResponse1 = restTemplate.getForEntity(path + "/" + entity.getId(), AnimationDetailedResponse.class);
+        Assertions.assertTrue(getResponse1.getStatusCode().is2xxSuccessful());
+        Assertions.assertEquals(0, Objects.requireNonNull(getResponse1.getBody()).getComments().size());
+
+        ResponseEntity<CommentResponse> postResponse = restTemplate.exchange(path + "/" + entity.getId() + "/comment", HttpMethod.POST, new HttpEntity<>(new CommentCreateUpdateRequest(oldComment)), CommentResponse.class);
+
+        restTemplate.exchange(path + "/" + entity.getId() + "/comment" + "/" + Objects.requireNonNull(postResponse.getBody()).getId(), HttpMethod.PUT, new HttpEntity<>(new CommentCreateUpdateRequest(newComment)), CommentResponse.class);
+
+        ResponseEntity<AnimationDetailedResponse> getResponse2 = restTemplate.getForEntity(path + "/" + entity.getId(), AnimationDetailedResponse.class);
+        Assertions.assertEquals(1, Objects.requireNonNull(getResponse2.getBody()).getComments().size());
+        Assertions.assertEquals(newComment, getResponse2.getBody().getComments().get(0).getContent());
     }
 
     @Test
     void testDeleteComment() {
-        //void deleteComment(@PathVariable String id, @PathVariable String commentId);
+        String comment = "testContent";
+        var entity = animationRepository.save(new Animation(
+                UUID.fromString("3f6be0e9-f275-4698-a1c2-0d4baede541e"), UUID.fromString("312401f2-37db-427b-86ce-c10ab9675916"),
+                "TesztElek", 11, "TesztHash1", Instant.EPOCH, "TesztTitle", List.of()));
+
+        ResponseEntity<AnimationDetailedResponse> getResponse1 = restTemplate.getForEntity(path + "/" + entity.getId(), AnimationDetailedResponse.class);
+        Assertions.assertTrue(getResponse1.getStatusCode().is2xxSuccessful());
+        Assertions.assertEquals(0, Objects.requireNonNull(getResponse1.getBody()).getComments().size());
+
+        ResponseEntity<CommentResponse> postResponse = restTemplate.exchange(path + "/" + entity.getId() + "/comment", HttpMethod.POST, new HttpEntity<>(new CommentCreateUpdateRequest(comment)), CommentResponse.class);
+
+        ResponseEntity<AnimationDetailedResponse> getResponse2 = restTemplate.getForEntity(path + "/" + entity.getId(), AnimationDetailedResponse.class);
+        Assertions.assertEquals(1, Objects.requireNonNull(getResponse2.getBody()).getComments().size());
+        Assertions.assertEquals(comment, getResponse2.getBody().getComments().get(0).getContent());
+
+        restTemplate.delete(path + "/" + entity.getId() + "/comment" + "/" + Objects.requireNonNull(postResponse.getBody()).getId());
+
+        ResponseEntity<AnimationDetailedResponse> getResponse3 = restTemplate.getForEntity(path + "/" + entity.getId(), AnimationDetailedResponse.class);
+        Assertions.assertEquals(0, Objects.requireNonNull(getResponse3.getBody()).getComments().size());
     }
 
 }
