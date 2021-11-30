@@ -22,7 +22,7 @@ public class ConversionUtil {
      * @return the Java {@code LocalDateTime}
      */
     public LocalDateTime toLocalDateTime(CaffLibrary.Time ctime) {
-        return LocalDateTime.of(1900 + ctime.year, ctime.month, ctime.day, ctime.hour, ctime.minute, ctime.second);
+        return LocalDateTime.of(1900 + ctime.year, 1 + ctime.month, ctime.day, ctime.hour, ctime.minute, ctime.second);
     }
 
     /**
