@@ -54,20 +54,18 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        // We don't need CSRF for this example
+        // disable csrf
         httpSecurity.csrf().disable()
-                // dont authenticate this particular request
+                // don't authenticate the following
                 .authorizeRequests().antMatchers("/login", "/register", "/refresh").permitAll()
                 .antMatchers("/oauth2/**", "/swagger-resources/**", "/swagger-ui/**", "/swagger**", "/webjars/springfox-swagger-ui/**", "/v2/api-docs**", "/**/v2/api-docs").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/anim/**").permitAll()
                 // all other requests need to be authenticated
                 .anyRequest().authenticated().and()
-                // make sure we use stateless session; session won't be used to
-                // store user's state.
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
+                // make sure we use stateless session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
         // Add a filter to validate the tokens with every request
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }

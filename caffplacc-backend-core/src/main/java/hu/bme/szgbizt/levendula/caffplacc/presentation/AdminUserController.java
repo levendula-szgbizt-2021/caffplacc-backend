@@ -4,7 +4,6 @@ import hu.bme.szgbizt.levendula.caffplacc.service.AdminUserService;
 import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserIF;
 import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserResponse;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateUpdateRequest;
-import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
