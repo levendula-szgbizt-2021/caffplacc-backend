@@ -3,11 +3,13 @@ package hu.bme.szgbizt.levendula.caffplacc.service;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
+import hu.bme.szgbizt.levendula.caffplacc.data.repository.RefreshTokenRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.UserResponseMapper;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,21 +19,15 @@ import javax.persistence.EntityNotFoundException;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final CommentRepository commentRepository;
     private final AnimationRepository animationRepository;
     private final PasswordEncoder bcryptEncoder;
     private final UserResponseMapper mapper;
-
-    public UserService(UserRepository userRepository, CommentRepository commentRepository, AnimationRepository animationRepository, PasswordEncoder bcryptEncoder, UserResponseMapper mapper) {
-        this.userRepository = userRepository;
-        this.commentRepository = commentRepository;
-        this.animationRepository = animationRepository;
-        this.bcryptEncoder = bcryptEncoder;
-        this.mapper = mapper;
-    }
 
     public UserResponse getUserData() {
         return mapper.map(findUserById(getUserToken()));
@@ -67,6 +63,8 @@ public class UserService {
 
     public void deleteUserData() {
         var userId = getUserToken();
+        var token = refreshTokenRepository.findByUserId(userId);
+        token.ifPresent(refreshTokenRepository::delete);
         commentRepository.deleteAllByUserId(userId);
         animationRepository.deleteAllByUserId(userId); // todo delete comments on all animations
         userRepository.deleteById(userId);

@@ -5,6 +5,7 @@ import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.UserRole;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
+import hu.bme.szgbizt.levendula.caffplacc.data.repository.RefreshTokenRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
@@ -47,6 +48,9 @@ class UserServiceTest {
 
     @Mock
     private AnimationRepository animationRepository;
+
+    @Mock
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Mock
     private PasswordEncoder bcryptEncoder;
