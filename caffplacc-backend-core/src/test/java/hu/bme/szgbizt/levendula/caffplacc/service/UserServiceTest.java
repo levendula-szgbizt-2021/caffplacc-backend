@@ -180,7 +180,6 @@ class UserServiceTest {
         securityContext.setAuthentication(authentication);
         SecurityContextHolder.setContext(securityContext);
         userService.deleteUserData();
-        verify(commentRepository, times(1)).deleteAllByUserId(mockID);
         verify(animationRepository, times(1)).deleteAllByUserId(mockID);
         verify(userRepository, times(1)).deleteById(mockID);
     }

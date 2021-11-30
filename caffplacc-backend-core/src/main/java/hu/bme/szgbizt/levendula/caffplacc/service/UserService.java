@@ -129,8 +129,7 @@ public class UserService {
     private void deleteUser(UUID userId) {
         var token = refreshTokenRepository.findByUserId(userId);
         token.ifPresent(refreshTokenRepository::delete);
-        commentRepository.deleteAllByUserId(userId);
-        animationRepository.deleteAllByUserId(userId); // todo delete comments on all animations
+        animationRepository.deleteAllByUserId(userId);
         userRepository.deleteById(userId);
     }
 }
