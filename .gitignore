@@ -30,6 +30,7 @@ out/
 .h2data
 h2data
 db-data
+logs
 
 ### NetBeans ###
 /nbproject/private/

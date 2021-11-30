@@ -14,10 +14,11 @@ import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.AnimationResponseMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,12 +56,15 @@ public class AnimationService {
     private final Path fileStorageLocation;
     private final Path previewStorageLocation;
 
+    private final StorageService storageService;
+
     public AnimationService(AnimationRepository animationRepository, CommentRepository commentRepository, AnimationResponseMapper mapper, UserRepository userRepository,
-                            @Value("${files.upload-dir}") String uploadDirectory, @Value("${files.preview-dir}") String previewDirectory) {
+                            @Value("${files.upload-dir}") String uploadDirectory, @Value("${files.preview-dir}") String previewDirectory, StorageService storageService) {
         this.animationRepository = animationRepository;
         this.commentRepository = commentRepository;
         this.mapper = mapper;
         this.userRepository = userRepository;
+        this.storageService = storageService;
         this.caffUtil = new CaffShellParser(Runtime.getRuntime());
         this.fileStorageLocation = Paths.get(uploadDirectory).toAbsolutePath().normalize();
         this.previewStorageLocation = Paths.get(previewDirectory).toAbsolutePath().normalize();
@@ -109,43 +113,74 @@ public class AnimationService {
         return mapper.map(animationRepository.save(animation));
     }
 
-    public void deleteAnimation(UUID id) throws IOException {
-        UUID userId = getUserToken();
-        Animation anim = findAnimationById(id);
-        if (anim.getUserId().equals(userId)) {
+    public void deleteAnimation(UUID id) {
+        var userId = getUserToken();
+        var animation = findAnimationById(id);
+        if (animation.getUserId().equals(userId)) {
             commentRepository.deleteAllByAnimationId(id);
             animationRepository.deleteById(id);
-            String fileName = id.toString() + ".caff";
-            String previewName = id.toString() + ".gif";
+            String fileName = id + ".caff";
+            String previewName = id + ".gif";
             Path filePath = fileStorageLocation.resolve(fileName).normalize();
             Path previewPath = previewStorageLocation.resolve(previewName).normalize();
-            Files.delete(filePath);
-            Files.delete(previewPath);
-        }
-    }
-
-    public Resource previewAnimation(UUID id) throws FileNotFoundException {
-        String fileName = id.toString() + ".gif";
-        return getResource(fileName, previewStorageLocation);
-    }
-
-    private Resource getResource(String fileName, Path resourceLocation) throws FileNotFoundException {
-        try {
-            Path filePath = resourceLocation.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists()) {
-                return resource;
-            } else {
-                throw new FileNotFoundException("File not found " + fileName);
+            try {
+                Files.delete(filePath);
+                Files.delete(previewPath);
+            } catch (IOException e) {
+                log.error("IOException when trying to delete the following files: {}, {}", filePath, previewPath);
             }
-        } catch (MalformedURLException | FileNotFoundException ex) {
-            throw new FileNotFoundException("File not found " + fileName);
         }
     }
 
-    public Resource downloadAnimation(UUID id) throws FileNotFoundException {
-        String fileName = id.toString() + ".caff";
-        return getResource(fileName, fileStorageLocation);
+    public ResponseEntity<?> previewAnimation(UUID id) {
+        try {
+            String fileName = id.toString() + ".gif";
+            var resource = storageService.getResource(fileName, previewStorageLocation);
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_GIF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } catch (FileNotFoundException e) {
+            return ResponseEntity.notFound().location(URI.create(id.toString())).build();
+        }
+    }
+
+    public ResponseEntity<?> downloadAnimation(UUID id) {
+        try {
+            String fileName = id.toString() + ".caff";
+            var resource = storageService.getResource(fileName, fileStorageLocation);
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } catch (FileNotFoundException e) {
+            return ResponseEntity.notFound().location(URI.create(id.toString())).build();
+        }
+    }
+
+    public CommentResponse createComment(UUID id, CommentCreateUpdateRequest request) {
+        var animation = findAnimationById(id);
+        var user = userRepository.getById(getUserToken());
+        var comment = new Comment(UUID.randomUUID(), user.getId(), user.getUsername(), request.getContent(), Instant.now(), animation);
+        return mapper.map(commentRepository.save(comment));
+    }
+
+    public CommentResponse updateComment(UUID commentId, CommentCreateUpdateRequest request) {
+        Comment comment;
+        if (isAdministrator()) {
+            comment = commentRepository.getById(commentId);
+        } else {
+            comment = findCommentByIdAndUserId(commentId, getUserToken());
+        }
+        comment.setContent(request.getContent());
+        return mapper.map(commentRepository.save(comment));
+    }
+
+    public void deleteComment(UUID id) {
+        if (isAdministrator()) {
+            commentRepository.deleteById(id);
+        } else {
+            var comment = findCommentByIdAndUserId(id, getUserToken());
+            commentRepository.delete(comment);
+        }
     }
 
     private Animation findAnimationById(UUID id) {
@@ -213,35 +248,6 @@ public class AnimationService {
         DigestInputStream dis = new DigestInputStream(is, md);
         while (dis.read() != -1) ;
         return DatatypeConverter.printHexBinary(md.digest());
-    }
-
-    public CommentResponse createComment(UUID id, CommentCreateUpdateRequest request) {
-        var animation = findAnimationById(id);
-        var user = userRepository.getById(getUserToken());
-        var comment = new Comment(UUID.randomUUID(), user.getId(), user.getUsername(), request.getContent(), Instant.now(), animation);
-        return mapper.map(commentRepository.save(comment));
-    }
-
-    public CommentResponse updateComment(UUID commentId, CommentCreateUpdateRequest request) {
-        Comment comment = null;
-        if (isAdministrator()){
-            comment = commentRepository.getById(commentId);
-        }
-        else {
-            comment = findCommentByIdAndUserId(commentId, getUserToken());
-        }
-        comment.setContent(request.getContent());
-        return mapper.map(commentRepository.save(comment));
-    }
-
-    public void deleteComment(UUID id) {
-        if (isAdministrator()){
-            commentRepository.deleteById(id);
-        }
-        else {
-            var comment = findCommentByIdAndUserId(id, getUserToken());
-            commentRepository.delete(comment);
-        }
     }
 
     private Comment findCommentByIdAndUserId(UUID id, UUID userId) {

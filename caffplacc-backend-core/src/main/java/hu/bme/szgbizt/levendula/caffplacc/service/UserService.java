@@ -10,6 +10,7 @@ import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.UserResponseMapper;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserService {
@@ -35,6 +37,8 @@ public class UserService {
 
     public UserResponse changeUserData(UserDto request) {
         var user = findUserById(getUserToken());
+        log.info("Updating user data for userId: {}", user.getId());
+
         if (request.getUsername() != null && !request.getUsername().equals(user.getUsername())) {
             if (userRepository.findByUsername(request.getUsername()).isPresent()) {
                 throw new CaffplaccException("That username is taken!");
@@ -48,6 +52,8 @@ public class UserService {
         if (request.getEmail() != null) {
             user.setEmail(request.getEmail());
         }
+
+        log.info("Updated user data for userId: {}", user.getId());
         return mapper.map(userRepository.save(user));
     }
 
@@ -63,10 +69,14 @@ public class UserService {
 
     public void deleteUserData() {
         var userId = getUserToken();
+        log.info("Deleting user data for userId: {}", userId);
+
         var token = refreshTokenRepository.findByUserId(userId);
         token.ifPresent(refreshTokenRepository::delete);
         commentRepository.deleteAllByUserId(userId);
         animationRepository.deleteAllByUserId(userId); // todo delete comments on all animations
         userRepository.deleteById(userId);
+
+        log.info("Deleted user data for userId: {}", userId);
     }
 }

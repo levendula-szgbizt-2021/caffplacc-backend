@@ -15,6 +15,6 @@ public class SwaggerPageable {
     @ApiModelProperty(value = "A kért oldal sorszáma (0..N)", example = "0")
     private int page;
 
-    @ApiModelProperty(value = "A rendezési feltételek formátuma: property(,asc|desc). A default rendezés növekvő (ascending). Több rendezési szempont is megadható.", example = "&sort=created,asc")
+    @ApiModelProperty(value = "A rendezési feltételek formátuma: property(asc|desc). A default rendezés növekvő (ascending). Több rendezési szempont is megadható.", example = "&sort=created,asc")
     private List<String> sort;
 }
