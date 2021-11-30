@@ -25,13 +25,11 @@ class CaffShellParserTest {
     @Test
     void testParse() throws IOException, InterruptedException {
         byte[] caffData = TestUtil.readResourceFile("1.caff");
-        byte[] gifData = TestUtil.readResourceFile("1.gif");
 
         Caff caff = parser.parse(caffData);
         Assertions.assertEquals(2, caff.getFrameCount());
         Assertions.assertEquals(LocalDateTime.of(2020, 7, 2, 14, 50), caff.getDate());
         Assertions.assertEquals("Test Creator", caff.getCreator());
-        Assertions.assertArrayEquals(gifData, caff.getGif());
     }
 
     @Test
