@@ -35,7 +35,7 @@ public class UserService {
 
     public UserResponse changeUserData(UserDto request) {
         var user = findUserById(getUserToken());
-        if (request.getUsername() != null) {
+        if (request.getUsername() != null && !request.getUsername().equals(user.getUsername())) {
             if (userRepository.findByUsername(request.getUsername()).isPresent()) {
                 throw new CaffplaccException("That username is taken!");
             } else {

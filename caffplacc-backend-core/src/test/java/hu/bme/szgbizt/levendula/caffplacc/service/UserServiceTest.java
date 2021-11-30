@@ -88,7 +88,7 @@ class UserServiceTest {
 
     @Test
     void changeUserDataOnlyUsernameThatExists() {
-        UserDto mockUserDto = new UserDto("test", null, null);
+        UserDto mockUserDto = new UserDto("test1", null, null);
         User mockUser = new User(UUID.randomUUID(), "test", "pass", "email", Arrays.asList(UserRole.ROLE_USER));
         UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(mockUser));

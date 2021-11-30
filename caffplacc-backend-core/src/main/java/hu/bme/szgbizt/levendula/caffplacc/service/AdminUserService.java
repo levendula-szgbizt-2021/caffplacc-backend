@@ -60,7 +60,7 @@ public class AdminUserService {
 
     public AdminUserResponse updateUser(UUID id, UserCreateUpdateRequest request) {
         var user = findUserById(id);
-        if (request.getUsername() != null || !Objects.equals(request.getUsername(), user.getUsername())) {
+        if (request.getUsername() != null && !request.getUsername().equals(user.getUsername())) {
             if (userRepository.findByUsername(request.getUsername()).isPresent()) {
                 throw new CaffplaccException("That username is taken!");
             } else {
