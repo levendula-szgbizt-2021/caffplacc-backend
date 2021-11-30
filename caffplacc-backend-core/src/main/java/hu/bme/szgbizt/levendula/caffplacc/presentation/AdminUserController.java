@@ -1,6 +1,6 @@
 package hu.bme.szgbizt.levendula.caffplacc.presentation;
 
-import hu.bme.szgbizt.levendula.caffplacc.service.AdminUserService;
+import hu.bme.szgbizt.levendula.caffplacc.service.UserService;
 import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserIF;
 import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserResponse;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateUpdateRequest;
@@ -16,9 +16,9 @@ import java.util.UUID;
 @RequestMapping("/api/admin/settings")
 public class AdminUserController implements AdminUserIF {
 
-    private final AdminUserService service;
+    private final UserService service;
 
-    public AdminUserController(AdminUserService service) {
+    public AdminUserController(UserService service) {
         this.service = service;
     }
 
@@ -37,18 +37,18 @@ public class AdminUserController implements AdminUserIF {
     @Override
     @PostMapping
     public AdminUserResponse createUser(@RequestBody UserCreateUpdateRequest request) {
-        return service.createUser(request);
+        return service.createUserByAdmin(request);
     }
 
     @Override
     @PutMapping("/{id}")
     public AdminUserResponse updateUser(@PathVariable String id, @RequestBody UserCreateUpdateRequest request) {
-        return service.updateUser(UUID.fromString(id), request);
+        return service.updateUserByAdmin(UUID.fromString(id), request);
     }
 
     @Override
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable String id) {
-        service.deleteUser(UUID.fromString(id));
+        service.deleteUserByAdmin(UUID.fromString(id));
     }
 }

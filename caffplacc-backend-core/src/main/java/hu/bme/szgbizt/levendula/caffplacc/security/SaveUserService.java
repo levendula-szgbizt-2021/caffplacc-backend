@@ -50,11 +50,15 @@ public class SaveUserService {
         newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
         newUser.setEmail(user.getEmail());
         newUser.setRoles(List.of(UserRole.ROLE_USER));
+
+        log.info("Creating new user with username: {}", user.getUsername());
+
         return userRepository.save(newUser).getId().toString();
     }
 
 
     public JwtResponse login(JwtRequest authenticationRequest) {
+        log.info("Authentication of login request with username: {}", authenticationRequest.getUsername());
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         final User user = loadUserFromUsername(authenticationRequest.getUsername());
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
@@ -63,7 +67,9 @@ public class SaveUserService {
         final Date expirationDate = jwtTokenUtil.getExpirationDateFromToken(refreshToken);
 
         final UUID refreshTokenId = refreshTokenService.saveRefreshToken(user, refreshToken, expirationDate);
+
         log.info("Successfully saved refresh token with ID: " + refreshTokenId);
+
         return (new JwtResponse(token, refreshToken, user.getId().toString(), user.getUsername(), user.getRoles().stream().map(Objects::toString).collect(Collectors.toList())));
     }
 
@@ -74,6 +80,9 @@ public class SaveUserService {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(refreshToken.getUser().getUsername());
         final String newToken = jwtTokenUtil.generateToken(userDetails);
         final User user = loadUserFromUsername(userDetails.getUsername());
+
+        log.info("Successfully refreshed JWT for userId: {}", user.getId());
+
         return (new JwtResponse(newToken, refreshToken.getToken(), user.getId().toString(), user.getUsername(), user.getRoles().stream().map(Objects::toString).collect(Collectors.toList())));
     }
 

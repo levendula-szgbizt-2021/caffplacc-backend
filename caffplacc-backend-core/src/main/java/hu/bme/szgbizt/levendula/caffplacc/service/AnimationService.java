@@ -115,6 +115,8 @@ public class AnimationService {
 
     public void deleteAnimation(UUID id) {
         var userId = getUserToken();
+        log.info("Deleting animation for userId: {}, animationId: {}", userId, id);
+
         var animation = findAnimationById(id);
         if (animation.getUserId().equals(userId)) {
             commentRepository.deleteAllByAnimationId(id);
@@ -130,6 +132,7 @@ public class AnimationService {
                 log.error("IOException when trying to delete the following files: {}, {}", filePath, previewPath);
             }
         }
+        log.info("Deleted animation for userId: {}, animationId: {}", userId, id);
     }
 
     public ResponseEntity<?> previewAnimation(UUID id) {
@@ -176,9 +179,11 @@ public class AnimationService {
 
     public void deleteComment(UUID id) {
         if (isAdministrator()) {
+            log.info("Comment deleted by administrator. commentId: {}", id);
             commentRepository.deleteById(id);
         } else {
             var comment = findCommentByIdAndUserId(id, getUserToken());
+            log.info("Comment deleted by owner. userId: {}, commentId: {}", getUserToken(), id);
             commentRepository.delete(comment);
         }
     }
@@ -192,6 +197,8 @@ public class AnimationService {
     }
 
     private Animation createAnimationEntity(String title, MultipartFile file) {
+        log.info("Saving new animation entity for userId: {}", getUserToken());
+
         Animation anim = new Animation();
         try {
             //Caff caff = caffUtil.parse(file.getBytes());
@@ -231,6 +238,7 @@ public class AnimationService {
             InputStream bis = new ByteArrayInputStream(caff.getGif());
             Files.copy(bis, previewTargetLocation, StandardCopyOption.REPLACE_EXISTING);
 
+            log.info("Successfully created new animation entity with Id: {}", anim.getId());
             return anim;
         } catch (IOException e) {
             throw new CaffplaccException("FILE_UPLOAD_FAILED");

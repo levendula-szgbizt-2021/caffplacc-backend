@@ -28,6 +28,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -71,8 +72,8 @@ class UserServiceTest {
     @Test
     void getUserData() {
         UserResponse userResponse = new UserResponse("id", "username", "email");
-        User mockUser = new User(UUID.randomUUID(), "test", "pass", "email", Arrays.asList(UserRole.ROLE_USER));
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+        User mockUser = new User(UUID.randomUUID(), "test", "pass", "email", List.of(UserRole.ROLE_USER));
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(mockUser));
         when(userRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(mockUser));
         when(mapper.map(Mockito.any(User.class))).thenReturn(userResponse);
@@ -89,8 +90,8 @@ class UserServiceTest {
     @Test
     void changeUserDataOnlyUsernameThatExists() {
         UserDto mockUserDto = new UserDto("test1", null, null);
-        User mockUser = new User(UUID.randomUUID(), "test", "pass", "email", Arrays.asList(UserRole.ROLE_USER));
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+        User mockUser = new User(UUID.randomUUID(), "test", "pass", "email", List.of(UserRole.ROLE_USER));
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(mockUser));
         when(userRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(mockUser));
         when(authentication.getPrincipal()).thenReturn(userDetails);
@@ -106,7 +107,7 @@ class UserServiceTest {
         UserDto mockUserDto = new UserDto("test2", null, null);
         User mockUser = mock(User.class);
         when(mockUser.getId()).thenReturn(UUID.randomUUID());
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));
         when(userRepository.findByUsername("test")).thenReturn(Optional.of(mockUser));
         when(userRepository.findByUsername("test2")).thenReturn(Optional.empty());
         when(userRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(mockUser));
@@ -128,7 +129,7 @@ class UserServiceTest {
         UserDto mockUserDto = new UserDto(null, "pass2", null);
         User mockUser = mock(User.class);
         when(mockUser.getId()).thenReturn(UUID.randomUUID());
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(mockUser));
         when(userRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(mockUser));
         when(userRepository.save(any(User.class))).thenReturn(new User());
@@ -150,7 +151,7 @@ class UserServiceTest {
         UserDto mockUserDto = new UserDto(null, null, "a@b.c");
         User mockUser = mock(User.class);
         when(mockUser.getId()).thenReturn(UUID.randomUUID());
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(mockUser));
         when(userRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(mockUser));
         when(userRepository.save(any(User.class))).thenReturn(new User());
@@ -172,7 +173,7 @@ class UserServiceTest {
         User mockUser = mock(User.class);
         UUID mockID = UUID.randomUUID();
         when(mockUser.getId()).thenReturn(mockID);
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(mockUser));
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(securityContext.getAuthentication()).thenReturn(authentication);
