@@ -3,7 +3,7 @@ package hu.bme.szgbizt.levendula.caffplacc.service;
 import hu.bme.szgbizt.levendula.caffplacc.animation.*;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtil;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.data.Caff;
-import hu.bme.szgbizt.levendula.caffplacc.caffutil.impl.CaffShellParser;
+import hu.bme.szgbizt.levendula.caffplacc.caffutil.impl.CaffJnaParser;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Animation;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Comment;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
@@ -12,7 +12,6 @@ import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.AnimationResponseMapper;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -178,8 +177,8 @@ class AnimationServiceTest {
         caff.setCreator("Jancsi");
         caff.setDate(LocalDateTime.now());
         caff.setGif(gifData);
-        CaffUtil caffUtil = mock(CaffShellParser.class);
-        //when(caffUtil.parse(any())).thenReturn(caff);
+        CaffUtil caffUtil = mock(CaffJnaParser.class);
+        when(caffUtil.parse(any())).thenReturn(caff);
         ReflectionTestUtils.setField(animationService, "caffUtil", caffUtil);
 
         UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));
