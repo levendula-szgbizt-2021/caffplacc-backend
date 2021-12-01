@@ -4,7 +4,7 @@ import hu.bme.szgbizt.levendula.caffplacc.animation.*;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtil;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtilException;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.data.Caff;
-import hu.bme.szgbizt.levendula.caffplacc.caffutil.impl.CaffShellParser;
+import hu.bme.szgbizt.levendula.caffplacc.caffutil.impl.CaffJnaParser;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Animation;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Comment;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
@@ -41,7 +41,6 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
@@ -66,7 +65,7 @@ public class AnimationService {
         this.mapper = mapper;
         this.userRepository = userRepository;
         this.storageService = storageService;
-        this.caffUtil = new CaffShellParser(Runtime.getRuntime());
+        this.caffUtil = new CaffJnaParser();
         this.fileStorageLocation = Paths.get(uploadDirectory).toAbsolutePath().normalize();
         this.previewStorageLocation = Paths.get(previewDirectory).toAbsolutePath().normalize();
         if (!Files.exists(fileStorageLocation)) {
