@@ -10,11 +10,11 @@ import javax.validation.Valid;
 public interface UserAuthIF {
 
     @PostMapping("/register")
-    ResponseEntity<?> saveUser(@RequestBody @Valid UserDto user) throws CaffplaccException;
+    ResponseEntity<Object> saveUser(@RequestBody @Valid UserDto user) throws CaffplaccException;
 
     @PostMapping("/login")
-    ResponseEntity<?> createAuthenticationToken(@RequestBody @Valid JwtRequest authenticationRequest) throws CaffplaccException;
+    ResponseEntity<Object> createAuthenticationToken(@RequestBody @Valid JwtRequest authenticationRequest) throws CaffplaccException;
 
     @PostMapping("/refresh")
-    ResponseEntity<?> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) throws CaffplaccException;
+    ResponseEntity<Object> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) throws CaffplaccException;
 }

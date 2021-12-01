@@ -5,6 +5,7 @@ import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.time.Instant;
 import java.util.UUID;
@@ -24,5 +25,6 @@ public class Comment {
     String content;
     Instant date;
     @ManyToOne
+    @JoinColumn(name = "animation_id")
     Animation animation;
 }

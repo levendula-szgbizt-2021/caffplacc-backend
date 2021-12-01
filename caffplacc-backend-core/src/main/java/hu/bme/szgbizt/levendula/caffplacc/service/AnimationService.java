@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -113,12 +114,14 @@ public class AnimationService {
         return mapper.map(animationRepository.save(animation));
     }
 
+    @Transactional
     public void deleteAnimation(UUID id) {
         var userId = getUserToken();
         log.info("Deleting animation for userId: {}, animationId: {}", userId, id);
 
         var animation = findAnimationById(id);
         if (animation.getUserId().equals(userId)) {
+            commentRepository.deleteAllByAnimationId(id);
             animationRepository.deleteById(id);
             String fileName = id + ".caff";
             String previewName = id + ".gif";
@@ -195,7 +198,8 @@ public class AnimationService {
         return animationRepository.findByIdAndUserId(id, userId).orElseThrow(() -> new EntityNotFoundException(Animation.class.getName()));
     }
 
-    @java.lang.SuppressWarnings("java:S2142")  // Suppress Sonar, because the caffUtil can throw InterruptedException, but we don't have to handle it (it means that the parse process failed).
+    @java.lang.SuppressWarnings("java:S2142")
+    // Suppress Sonar, because the caffUtil can throw InterruptedException, but we don't have to handle it (it means that the parse process failed).
     private Animation createAnimationEntity(String title, MultipartFile file) {
         log.info("Saving new animation entity for userId: {}", getUserToken());
 
@@ -219,7 +223,7 @@ public class AnimationService {
             anim = animationRepository.save(anim);
             String animId = anim.getId().toString();
             String originalFilename = "";
-            if(file.getOriginalFilename() != null) {
+            if (file.getOriginalFilename() != null) {
                 originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
             }
 

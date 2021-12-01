@@ -22,17 +22,17 @@ public class JwtAuthenticationController implements UserAuthIF {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> saveUser(@RequestBody @Valid UserDto user) throws CaffplaccException {
+    public ResponseEntity<Object> saveUser(@RequestBody @Valid UserDto user) throws CaffplaccException {
         return ResponseEntity.ok(saveUserService.save(user));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody @Valid JwtRequest authenticationRequest) throws CaffplaccException {
+    public ResponseEntity<Object> createAuthenticationToken(@RequestBody @Valid JwtRequest authenticationRequest) throws CaffplaccException {
         return ResponseEntity.ok(saveUserService.login(authenticationRequest));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) throws CaffplaccException {
+    public ResponseEntity<Object> refreshAuthenticationToken(@RequestBody JwtRefreshRequest refreshRequest) throws CaffplaccException {
         return ResponseEntity.ok(saveUserService.refresh(refreshRequest));
     }
 }
