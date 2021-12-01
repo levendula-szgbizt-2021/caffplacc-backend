@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.Size;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 @Data
@@ -20,6 +20,6 @@ public class JwtRequest implements Serializable {
 
     String username;
     @Password
-    @Size(min = 8, message = "Password size must be at least 8 characters.")
+    @NotEmpty
     String password;
 }
