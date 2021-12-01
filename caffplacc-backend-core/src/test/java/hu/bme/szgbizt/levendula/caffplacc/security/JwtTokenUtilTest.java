@@ -1,10 +1,7 @@
 package hu.bme.szgbizt.levendula.caffplacc.security;
 
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.UserRole;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,6 +36,12 @@ class JwtTokenUtilTest {
         String key = "key";
         String token = Jwts.builder().setSubject("Joe").signWith(SignatureAlgorithm.HS512, key.getBytes()  ).compact();
         assertThrows(SignatureException.class, () -> jwtTokenUtil.getUsernameFromToken(token));
+    }
+
+    @Test
+    void usingAnInvalidJWTShouldThrowException() {
+        String wannabeToken = "djaesdivnaopsidnpaosinb";
+        assertThrows(MalformedJwtException.class, () -> jwtTokenUtil.getUsernameFromToken(wannabeToken));
     }
 
     @Test
