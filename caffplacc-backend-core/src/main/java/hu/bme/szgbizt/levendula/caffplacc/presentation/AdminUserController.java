@@ -3,7 +3,8 @@ package hu.bme.szgbizt.levendula.caffplacc.presentation;
 import hu.bme.szgbizt.levendula.caffplacc.service.UserService;
 import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserIF;
 import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserResponse;
-import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateUpdateRequest;
+import hu.bme.szgbizt.levendula.caffplacc.user.UserDataCreateRequest;
+import hu.bme.szgbizt.levendula.caffplacc.user.UserDataUpdateRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,13 +38,13 @@ public class AdminUserController implements AdminUserIF {
 
     @Override
     @PostMapping
-    public AdminUserResponse createUser(@RequestBody @Valid UserCreateUpdateRequest request) {
+    public AdminUserResponse createUser(@RequestBody @Valid UserDataCreateRequest request) {
         return service.createUserByAdmin(request);
     }
 
     @Override
     @PutMapping("/{id}")
-    public AdminUserResponse updateUser(@PathVariable String id, @RequestBody @Valid UserCreateUpdateRequest request) {
+    public AdminUserResponse updateUser(@PathVariable String id, @RequestBody @Valid UserDataUpdateRequest request) {
         return service.updateUserByAdmin(UUID.fromString(id), request);
     }
 

@@ -7,10 +7,9 @@ import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.RefreshTokenRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
-import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.UserResponseMapper;
 import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserResponse;
-import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateUpdateRequest;
+import hu.bme.szgbizt.levendula.caffplacc.user.UserDataCreateRequest;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserDataUpdateRequest;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
 import lombok.AllArgsConstructor;
@@ -54,7 +53,7 @@ public class UserService {
         }
     }
 
-    public AdminUserResponse createUserByAdmin(UserCreateUpdateRequest request) {
+    public AdminUserResponse createUserByAdmin(UserDataCreateRequest request) {
         var newUser = new User();
         log.info("Creating new user from admin account.");
 
@@ -74,19 +73,19 @@ public class UserService {
     public UserResponse changeUserData(UserDataUpdateRequest request) {
         var userId = getUserToken();
         log.info("Updating user data for userId: {}", userId);
-        var user = updateUser(userId, new UserCreateUpdateRequest(request.getUsername(), request.getPassword(), request.getEmail(), false));
+        var user = updateUser(userId, request);
         log.info("Updated user data for userId: {}", userId);
         return mapper.map(user);
     }
 
-    public AdminUserResponse updateUserByAdmin(UUID id, UserCreateUpdateRequest request) {
+    public AdminUserResponse updateUserByAdmin(UUID id, UserDataUpdateRequest request) {
         log.info("Updating user from admin account with userId: {}", id);
         var user = updateUser(id, request);
         log.info("Updated user from admin account with userId: {}", id);
         return mapper.mapToAdminUserResponse(user);
     }
 
-    private User updateUser(UUID id, UserCreateUpdateRequest request) {
+    private User updateUser(UUID id, UserDataUpdateRequest request) {
         var user = findUserById(id);
         if (request.getUsername() != null && !request.getUsername().equals(user.getUsername())) {
             if (userRepository.findByUsername(request.getUsername()).isPresent()) {

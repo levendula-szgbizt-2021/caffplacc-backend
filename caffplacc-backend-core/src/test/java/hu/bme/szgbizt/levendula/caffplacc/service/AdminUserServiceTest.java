@@ -9,7 +9,8 @@ import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.UserResponseMapper;
 import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserResponse;
-import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateUpdateRequest;
+import hu.bme.szgbizt.levendula.caffplacc.user.UserDataCreateRequest;
+import hu.bme.szgbizt.levendula.caffplacc.user.UserDataUpdateRequest;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -89,7 +90,7 @@ class AdminUserServiceTest {
     @Test
     void createUserIfNotAdmin() {
         AdminUserResponse adminUserResponse = new AdminUserResponse("id", "username", "email", false);
-        UserCreateUpdateRequest request = new UserCreateUpdateRequest("john", "pass", "a@b.c", false);
+        UserDataCreateRequest request = new UserDataCreateRequest("john", "pass", "a@b.c", false);
         when(bcryptEncoder.encode(anyString())).thenReturn("SECRET");
         when(userRepository.save(any(User.class))).thenReturn(new User());
         when(mapper.mapToAdminUserResponse(any(User.class))).thenReturn(adminUserResponse);
@@ -106,7 +107,7 @@ class AdminUserServiceTest {
     @Test
     void createUserIfAdmin() {
         AdminUserResponse adminUserResponse = new AdminUserResponse("id", "username", "email", true);
-        UserCreateUpdateRequest request = new UserCreateUpdateRequest("john", "pass", "a@b.c", true);
+        UserDataCreateRequest request = new UserDataCreateRequest("john", "pass", "a@b.c", true);
         when(bcryptEncoder.encode(anyString())).thenReturn("SECRET");
         when(userRepository.save(any(User.class))).thenReturn(new User());
         when(mapper.mapToAdminUserResponse(any(User.class))).thenReturn(adminUserResponse);
@@ -123,7 +124,7 @@ class AdminUserServiceTest {
     @Test
     void updateUserOnlyUsername() {
         UUID mockID = UUID.randomUUID();
-        UserCreateUpdateRequest request = new UserCreateUpdateRequest("test", null, null, false);
+        UserDataUpdateRequest request = new UserDataUpdateRequest("test", null, null);
         User mockUser = mock(User.class);
         when(userRepository.findById(mockID)).thenReturn(Optional.of(mockUser));
         when(userRepository.findByUsername("test")).thenReturn(Optional.empty());
@@ -137,7 +138,7 @@ class AdminUserServiceTest {
     @Test
     void updateUserOnlyUsernameThatExists() {
         UUID mockID = UUID.randomUUID();
-        UserCreateUpdateRequest request = new UserCreateUpdateRequest("test", null, null, false);
+        UserDataUpdateRequest request = new UserDataUpdateRequest("test", null, null);
         User mockUser = mock(User.class);
         when(userRepository.findById(mockID)).thenReturn(Optional.of(mockUser));
         when(userRepository.findByUsername("test")).thenReturn(Optional.of(new User()));
@@ -149,7 +150,7 @@ class AdminUserServiceTest {
     @Test
     void updateUserOnlyPassword() {
         UUID mockID = UUID.randomUUID();
-        UserCreateUpdateRequest request = new UserCreateUpdateRequest(null, "pass", null, false);
+        UserDataUpdateRequest request = new UserDataUpdateRequest(null, "pass", null);
         User mockUser = mock(User.class);
         when(userRepository.findById(mockID)).thenReturn(Optional.of(mockUser));
         when(bcryptEncoder.encode("pass")).thenReturn("SECRET");
@@ -163,7 +164,7 @@ class AdminUserServiceTest {
     @Test
     void updateUserOnlyEmail() {
         UUID mockID = UUID.randomUUID();
-        UserCreateUpdateRequest request = new UserCreateUpdateRequest(null, null, "a@b.c", false);
+        UserDataUpdateRequest request = new UserDataUpdateRequest(null, null, "a@b.c");
         User mockUser = mock(User.class);
         when(userRepository.findById(mockID)).thenReturn(Optional.of(mockUser));
         when(userRepository.save(mockUser)).thenReturn(mockUser);
@@ -176,7 +177,7 @@ class AdminUserServiceTest {
     @Test
     void updateUserOnlyEmailAndIsAdmin() {
         UUID mockID = UUID.randomUUID();
-        UserCreateUpdateRequest request = new UserCreateUpdateRequest(null, null, "a@b.c", true);
+        UserDataUpdateRequest request = new UserDataUpdateRequest(null, null, "a@b.c");
         User mockUser = mock(User.class);
         when(userRepository.findById(mockID)).thenReturn(Optional.of(mockUser));
         when(userRepository.save(mockUser)).thenReturn(mockUser);

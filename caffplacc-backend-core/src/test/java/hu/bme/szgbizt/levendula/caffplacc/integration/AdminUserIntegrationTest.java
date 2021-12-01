@@ -7,8 +7,7 @@ import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.paging.PaginatedResponse;
 import hu.bme.szgbizt.levendula.caffplacc.security.SecurityConstants;
 import hu.bme.szgbizt.levendula.caffplacc.user.AdminUserResponse;
-import hu.bme.szgbizt.levendula.caffplacc.user.UserCreateUpdateRequest;
-import hu.bme.szgbizt.levendula.caffplacc.user.UserResponse;
+import hu.bme.szgbizt.levendula.caffplacc.user.UserDataCreateRequest;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -199,12 +197,12 @@ class AdminUserIntegrationTest {
     void createUserShouldSucceedWithValidInformation() {
         String token = generateValidTokenForUserWithLongerExpirationDate(admin);
         HttpHeaders headers = new HttpHeaders();
-        UserCreateUpdateRequest userCreateUpdateRequest = new UserCreateUpdateRequest("TesztElek3", "Pppppppppp1", "g@h.i", false);
+        UserDataCreateRequest userDataCreateRequest = new UserDataCreateRequest("TesztElek3", "Pppppppppp1", "g@h.i", false);
         headers.add("Authorization", "Bearer "+token );
         ResponseEntity<AdminUserResponse> response = restTemplate.exchange(
                 path,
                 HttpMethod.POST,
-                new HttpEntity<>(userCreateUpdateRequest, headers),
+                new HttpEntity<>(userDataCreateRequest, headers),
                 AdminUserResponse.class
         );
 
@@ -219,8 +217,8 @@ class AdminUserIntegrationTest {
         );
 
         assertEquals(HttpStatus.OK, response2.getStatusCode());
-        assertEquals(userCreateUpdateRequest.getUsername(), Objects.requireNonNull(response2.getBody()).getUsername());
-        assertEquals(userCreateUpdateRequest.getEmail(), response2.getBody().getEmail());
+        assertEquals(userDataCreateRequest.getUsername(), Objects.requireNonNull(response2.getBody()).getUsername());
+        assertEquals(userDataCreateRequest.getEmail(), response2.getBody().getEmail());
         assertFalse(response2.getBody().isAdmin());
     }
 
@@ -228,12 +226,12 @@ class AdminUserIntegrationTest {
     void createUserShouldNotSucceedWithInValidInformation() {
         String token = generateValidTokenForUserWithLongerExpirationDate(admin);
         HttpHeaders headers = new HttpHeaders();
-        UserCreateUpdateRequest userCreateUpdateRequest = new UserCreateUpdateRequest("TesztElek3", "1", "g@h.i", false);
+        UserDataCreateRequest userDataCreateRequest = new UserDataCreateRequest("TesztElek3", "1", "g@h.i", false);
         headers.add("Authorization", "Bearer "+token );
         ResponseEntity<AdminUserResponse> response = restTemplate.exchange(
                 path,
                 HttpMethod.POST,
-                new HttpEntity<>(userCreateUpdateRequest, headers),
+                new HttpEntity<>(userDataCreateRequest, headers),
                 AdminUserResponse.class
         );
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -243,12 +241,12 @@ class AdminUserIntegrationTest {
     void creatingAlreadyExistingUser() {
         String token = generateValidTokenForUserWithLongerExpirationDate(admin);
         HttpHeaders headers = new HttpHeaders();
-        UserCreateUpdateRequest userCreateUpdateRequest = new UserCreateUpdateRequest("TesztElek", "1", "g@h.i", false);
+        UserDataCreateRequest userDataCreateRequest = new UserDataCreateRequest("TesztElek", "1", "g@h.i", false);
         headers.add("Authorization", "Bearer "+token );
         ResponseEntity<AdminUserResponse> response = restTemplate.exchange(
                 path,
                 HttpMethod.POST,
-                new HttpEntity<>(userCreateUpdateRequest, headers),
+                new HttpEntity<>(userDataCreateRequest, headers),
                 AdminUserResponse.class
         );
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -258,17 +256,17 @@ class AdminUserIntegrationTest {
     void updateUserShouldChangeUsernameWhenGiven() {
         String token = generateValidTokenForUserWithLongerExpirationDate(admin);
         HttpHeaders headers = new HttpHeaders();
-        UserCreateUpdateRequest userCreateUpdateRequest = new UserCreateUpdateRequest("TesztElek3", null, null, false);
+        UserDataCreateRequest userDataCreateRequest = new UserDataCreateRequest("TesztElek3", null, null, false);
         headers.add("Authorization", "Bearer "+token );
         ResponseEntity<AdminUserResponse> response = restTemplate.exchange(
                 path + "/" + user.getId(),
                 HttpMethod.PUT,
-                new HttpEntity<>(userCreateUpdateRequest, headers),
+                new HttpEntity<>(userDataCreateRequest, headers),
                 AdminUserResponse.class
         );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(userCreateUpdateRequest.getUsername(), Objects.requireNonNull(response.getBody()).getUsername());
+        assertEquals(userDataCreateRequest.getUsername(), Objects.requireNonNull(response.getBody()).getUsername());
 
         ResponseEntity<AdminUserResponse> response2 = restTemplate.exchange(
                 path + "/" + user.getId().toString(),
@@ -278,7 +276,7 @@ class AdminUserIntegrationTest {
         );
 
         assertEquals(HttpStatus.OK, response2.getStatusCode());
-        assertEquals(userCreateUpdateRequest.getUsername(), Objects.requireNonNull(response2.getBody()).getUsername());
+        assertEquals(userDataCreateRequest.getUsername(), Objects.requireNonNull(response2.getBody()).getUsername());
         assertEquals(user.getEmail(), response2.getBody().getEmail());
         assertEquals(user.getId().toString(), response2.getBody().getId());
     }
@@ -287,17 +285,17 @@ class AdminUserIntegrationTest {
     void updateUserShouldChangeAllInformationWhenGiven() {
         String token = generateValidTokenForUserWithLongerExpirationDate(admin);
         HttpHeaders headers = new HttpHeaders();
-        UserCreateUpdateRequest userCreateUpdateRequest = new UserCreateUpdateRequest("TesztElek3", "Rgfdlkfjgdlfkgjj2", "e@f.g", false);
+        UserDataCreateRequest userDataCreateRequest = new UserDataCreateRequest("TesztElek3", "Rgfdlkfjgdlfkgjj2", "e@f.g", false);
         headers.add("Authorization", "Bearer "+token );
         ResponseEntity<AdminUserResponse> response = restTemplate.exchange(
                 path + "/" + user.getId(),
                 HttpMethod.PUT,
-                new HttpEntity<>(userCreateUpdateRequest, headers),
+                new HttpEntity<>(userDataCreateRequest, headers),
                 AdminUserResponse.class
         );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(userCreateUpdateRequest.getUsername(), Objects.requireNonNull(response.getBody()).getUsername());
+        assertEquals(userDataCreateRequest.getUsername(), Objects.requireNonNull(response.getBody()).getUsername());
 
         ResponseEntity<AdminUserResponse> response2 = restTemplate.exchange(
                 path + "/" + user.getId().toString(),
@@ -307,8 +305,8 @@ class AdminUserIntegrationTest {
         );
 
         assertEquals(HttpStatus.OK, response2.getStatusCode());
-        assertEquals(userCreateUpdateRequest.getUsername(), Objects.requireNonNull(response2.getBody()).getUsername());
-        assertEquals(userCreateUpdateRequest.getEmail(), response2.getBody().getEmail());
+        assertEquals(userDataCreateRequest.getUsername(), Objects.requireNonNull(response2.getBody()).getUsername());
+        assertEquals(userDataCreateRequest.getEmail(), response2.getBody().getEmail());
         assertFalse(response2.getBody().isAdmin());
     }
 
