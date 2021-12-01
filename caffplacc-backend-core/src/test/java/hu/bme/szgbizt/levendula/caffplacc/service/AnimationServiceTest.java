@@ -2,6 +2,7 @@ package hu.bme.szgbizt.levendula.caffplacc.service;
 
 import hu.bme.szgbizt.levendula.caffplacc.animation.*;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtil;
+import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtilException;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.data.Caff;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.impl.CaffJnaParser;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Animation;
@@ -10,6 +11,7 @@ import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
+import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.AnimationResponseMapper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -205,6 +208,31 @@ class AnimationServiceTest {
         assertEquals(hashOfCaff, argument.getValue().getHash());
         assertTrue(Files.exists(Paths.get("src/test/resources/files/"+argument.getValue().getId()))); //No extension because we didn't specify one above
         assertTrue(Files.exists(Paths.get("src/test/resources/previews/"+argument.getValue().getId()+".gif")));
+    }
+
+    @Test
+    void createAnimationShouldThrowExceptionWhenParserFailed() throws IOException, InterruptedException {
+        String title = "Title";
+        Path caffFile = Paths.get("src/test/resources/test_caff/1.caff");
+        byte[] caffData = Files.readAllBytes(caffFile);
+        MultipartFile multipartFile = new MockMultipartFile("1.caff", caffData);
+
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test", "pass", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        User user = new User();
+        user.setId(UUID.randomUUID());
+        user.setUsername("John");
+
+        CaffUtil caffUtil = mock(CaffJnaParser.class);
+        when(caffUtil.parse(any())).thenThrow(new CaffUtilException("Error"));
+        ReflectionTestUtils.setField(animationService, "caffUtil", caffUtil);
+
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        assertThrows(CaffplaccException.class, () -> animationService.createAnimation(title, multipartFile));
     }
 
     @Test
