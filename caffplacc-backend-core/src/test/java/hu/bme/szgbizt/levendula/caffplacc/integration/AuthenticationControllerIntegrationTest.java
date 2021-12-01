@@ -68,6 +68,7 @@ public class AuthenticationControllerIntegrationTest {
 
     @BeforeEach
     void clear() {
+        userRepository.deleteAll();
         user = new User();
         user.setRoles(List.of(UserRole.ROLE_USER));
         user.setPassword(bcryenEncoder.encode("Secretere2"));
