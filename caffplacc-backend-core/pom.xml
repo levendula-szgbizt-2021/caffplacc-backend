@@ -77,7 +77,7 @@
                 <version>3.1.4</version>
                 <configuration>
                     <from>
-                        <image>adoptopenjdk:11-jre</image> <!-- This is the base image for all our apps -->
+                        <image>docker://caffplacc-base</image>
                     </from>
                     <to>
                         <image>caffplacc-backend</image>
