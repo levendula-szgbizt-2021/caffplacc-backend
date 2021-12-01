@@ -195,6 +195,7 @@ public class AnimationService {
         return animationRepository.findByIdAndUserId(id, userId).orElseThrow(() -> new EntityNotFoundException(Animation.class.getName()));
     }
 
+    @java.lang.SuppressWarnings("java:S2142")  // Suppress Sonar, because the caffUtil can throw InterruptedException, but we don't have to handle it (it means that the parse process failed).
     private Animation createAnimationEntity(String title, MultipartFile file) {
         log.info("Saving new animation entity for userId: {}", getUserToken());
 
@@ -217,7 +218,10 @@ public class AnimationService {
 
             anim = animationRepository.save(anim);
             String animId = anim.getId().toString();
-            String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
+            String originalFilename = "";
+            if(file.getOriginalFilename() != null) {
+                originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
+            }
 
             String fileExtension = "";
             if (originalFilename.lastIndexOf(".") != -1) {

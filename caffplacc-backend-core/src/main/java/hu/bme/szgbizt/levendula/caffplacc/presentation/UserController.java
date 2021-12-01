@@ -1,7 +1,6 @@
 package hu.bme.szgbizt.levendula.caffplacc.presentation;
 
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
-import hu.bme.szgbizt.levendula.caffplacc.login.UserDto;
 import hu.bme.szgbizt.levendula.caffplacc.service.UserService;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserDataUpdateRequest;
 import hu.bme.szgbizt.levendula.caffplacc.user.UserProfileIF;

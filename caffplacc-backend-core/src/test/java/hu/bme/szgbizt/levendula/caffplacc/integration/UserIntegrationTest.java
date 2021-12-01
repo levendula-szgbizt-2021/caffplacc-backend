@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = CaffplaccApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UserIntegrationTest {
+class UserIntegrationTest {
 
     private String path;
     private User user;

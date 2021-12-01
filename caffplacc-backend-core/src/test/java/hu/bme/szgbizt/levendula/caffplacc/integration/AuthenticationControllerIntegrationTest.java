@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = CaffplaccApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthenticationControllerIntegrationTest {
+class AuthenticationControllerIntegrationTest {
 
     private String path;
     private User user;
