@@ -192,7 +192,6 @@ public class AuthenticationControllerIntegrationTest {
         assertEquals("[{authority=ROLE_USER}]", rolesFromToken2);
         String usernameFromRefreshToken2 = getUsernameFromToken(response2.getBody().getRefreshToken());
         assertEquals(user.getUsername(), usernameFromRefreshToken2);
-        //assertNotEquals(response.getBody().getToken(), response2.getBody().getToken());
     }
 
     private String getUsernameFromToken(String token) {

@@ -80,23 +80,6 @@ public class AdminUserIntegrationTest {
         admin = null;
     }
 
-    //@Test
-    void endpointCanNotBeAccessedByNonAdminUser() {
-        String tokenForUser = generateValidTokenForUserWithLongerExpirationDate(user);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer "+tokenForUser );
-
-        ResponseEntity<PaginatedResponse<AdminUserResponse>> response = restTemplate.exchange(
-                path+"/"+"?query={query_string}",
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                new ParameterizedTypeReference<PaginatedResponse<AdminUserResponse>>() {},
-                "Test"
-        );
-
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-    }
-
     @Test
     void endpointCanBeAccessedByAdminUser() {
         String tokenForUser = generateValidTokenForUserWithLongerExpirationDate(admin);
@@ -104,11 +87,10 @@ public class AdminUserIntegrationTest {
         headers.add("Authorization", "Bearer "+tokenForUser );
 
         ResponseEntity<PaginatedResponse<AdminUserResponse>> response = restTemplate.exchange(
-                path+"/"+"?query={query_string}",
+                path,
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
-                new ParameterizedTypeReference<PaginatedResponse<AdminUserResponse>>() {},
-                "Test"
+                new ParameterizedTypeReference<PaginatedResponse<AdminUserResponse>>() {}
         );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -139,7 +121,7 @@ public class AdminUserIntegrationTest {
         assertArrayEquals(List.of("TesztElek","TesztElek2", "TesztTibor").toArray(), response.getBody().stream().map(AdminUserResponse::getUsername).toArray());
     }
 
-    //@Test
+    @Test
     void listingUsersWithGivenUsernameShouldReturnAllUserWhoseUsernameContainsThatPart() {
         User user2 = new User();
         user2.setUsername("TesztTibor");
@@ -153,7 +135,7 @@ public class AdminUserIntegrationTest {
         headers.add("Authorization", "Bearer "+tokenForUser );
 
         ResponseEntity<PaginatedResponse<AdminUserResponse>> response = restTemplate.exchange(
-                path+"?name={query_string}",
+                path+"?username={query_string}",
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
                 new ParameterizedTypeReference<PaginatedResponse<AdminUserResponse>>() {},

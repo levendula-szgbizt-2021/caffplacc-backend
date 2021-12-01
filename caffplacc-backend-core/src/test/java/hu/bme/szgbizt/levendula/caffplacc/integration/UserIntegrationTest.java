@@ -55,6 +55,7 @@ public class UserIntegrationTest {
     @BeforeEach
     void clear() {
         restTemplate = new TestRestTemplate();
+        userRepository.deleteAll();
         user = new User();
         user.setRoles(List.of(UserRole.ROLE_USER));
         user.setPassword("secret");
