@@ -1,6 +1,7 @@
 package hu.bme.szgbizt.levendula.caffplacc.animation;
 
 import io.swagger.annotations.ApiOperation;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -36,11 +37,11 @@ public interface AnimationIF {
 
     @ApiOperation(value = "previewAnimation", notes = "This endpoint can be called to download the preview of an animation.")
     @GetMapping("/{id}/preview")
-    ResponseEntity<?> previewAnimation(@PathVariable String id);
+    ResponseEntity<Resource> previewAnimation(@PathVariable String id);
 
     @ApiOperation(value = "downloadAnimation", notes = "This endpoint can be called to download an animation.")
     @GetMapping("/{id}/download")
-    ResponseEntity<?> downloadAnimation(@PathVariable String id);
+    ResponseEntity<Resource> downloadAnimation(@PathVariable String id);
 
     @ApiOperation(value = "createComment", produces = MediaType.APPLICATION_JSON_VALUE, notes = "This endpoint is used to upload a comment to an animation.")
     @PostMapping("/{id}/comment")

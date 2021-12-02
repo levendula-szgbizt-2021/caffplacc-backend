@@ -15,6 +15,7 @@ import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.AnimationResponseMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -137,7 +138,7 @@ public class AnimationService {
         log.info("Deleted animation for userId: {}, animationId: {}", userId, id);
     }
 
-    public ResponseEntity<?> previewAnimation(UUID id) {
+    public ResponseEntity<Resource> previewAnimation(UUID id) {
         try {
             String fileName = id.toString() + ".gif";
             var resource = storageService.getResource(fileName, previewStorageLocation);
@@ -149,7 +150,7 @@ public class AnimationService {
         }
     }
 
-    public ResponseEntity<?> downloadAnimation(UUID id) {
+    public ResponseEntity<Resource> downloadAnimation(UUID id) {
         try {
             String fileName = id.toString() + ".caff";
             var resource = storageService.getResource(fileName, fileStorageLocation);

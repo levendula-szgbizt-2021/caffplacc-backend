@@ -2,6 +2,7 @@ package hu.bme.szgbizt.levendula.caffplacc.presentation;
 
 import hu.bme.szgbizt.levendula.caffplacc.animation.*;
 import hu.bme.szgbizt.levendula.caffplacc.service.AnimationService;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -60,13 +61,13 @@ public class AnimationController implements AnimationIF {
 
     @Override
     @GetMapping("/{id}/preview")
-    public ResponseEntity<?> previewAnimation(@PathVariable String id) {
+    public ResponseEntity<Resource> previewAnimation(@PathVariable String id) {
         return service.previewAnimation(UUID.fromString(id));
     }
 
     @Override
     @GetMapping("/{id}/download")
-    public ResponseEntity<?> downloadAnimation(@PathVariable String id) {
+    public ResponseEntity<Resource> downloadAnimation(@PathVariable String id) {
         return service.downloadAnimation(UUID.fromString(id));
     }
 
