@@ -12,6 +12,7 @@ import hu.bme.szgbizt.levendula.caffplacc.data.repository.AnimationRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.CommentRepository;
 import hu.bme.szgbizt.levendula.caffplacc.data.repository.UserRepository;
 import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccException;
+import hu.bme.szgbizt.levendula.caffplacc.exception.CaffplaccParseException;
 import hu.bme.szgbizt.levendula.caffplacc.presentation.AnimationResponseMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -251,7 +252,7 @@ public class AnimationService {
             return anim;
         } catch (IOException | NoSuchAlgorithmException e) {
             log.error("Saving new animation failed at upload: {}", e);
-            throw new RuntimeException(e);
+            throw new CaffplaccParseException("FILE_UPLOAD_FAILED");
         }
     }
 
