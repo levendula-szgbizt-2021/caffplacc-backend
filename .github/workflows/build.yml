@@ -17,17 +17,19 @@ jobs:
         with:
           java-version: 11
       - name: Install caff and ciff libraries
+        env:
+          PREFIX: /usr
         run: |
           sudo apt update
           sudo apt install -y libjpeg-dev libmagickcore-6.q16-dev libmagickwand-6.q16-dev
           cd /tmp/
           git clone https://github.com/levendula-szgbizt-2021/ciff
           cd ciff/
-          make && sudo make install
+          make && sudo make install-noman
           cd ../
           git clone https://github.com/levendula-szgbizt-2021/caff
           cd caff/
-          make && sudo make install
+          make && sudo make install-noman
       - name: Cache SonarQube packages
         uses: actions/cache@v1
         with:
