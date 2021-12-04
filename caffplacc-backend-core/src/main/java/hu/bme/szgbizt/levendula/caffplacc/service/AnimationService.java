@@ -4,7 +4,7 @@ import hu.bme.szgbizt.levendula.caffplacc.animation.*;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtil;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.CaffUtilException;
 import hu.bme.szgbizt.levendula.caffplacc.caffutil.data.Caff;
-import hu.bme.szgbizt.levendula.caffplacc.caffutil.impl.CaffJnaParser;
+import hu.bme.szgbizt.levendula.caffplacc.caffutil.impl.CaffShellParser;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Animation;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.Comment;
 import hu.bme.szgbizt.levendula.caffplacc.data.entity.User;
@@ -68,7 +68,7 @@ public class AnimationService {
         this.mapper = mapper;
         this.userRepository = userRepository;
         this.storageService = storageService;
-        this.caffUtil = new CaffJnaParser();
+        this.caffUtil = new CaffShellParser(Runtime.getRuntime());
         this.fileStorageLocation = Paths.get(uploadDirectory).toAbsolutePath().normalize();
         this.previewStorageLocation = Paths.get(previewDirectory).toAbsolutePath().normalize();
         if (!Files.exists(fileStorageLocation)) {
