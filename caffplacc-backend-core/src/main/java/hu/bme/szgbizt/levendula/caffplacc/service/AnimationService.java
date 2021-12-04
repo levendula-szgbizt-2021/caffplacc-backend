@@ -205,9 +205,14 @@ public class AnimationService {
         log.info("Saving new animation entity for userId: {}", getUserToken());
 
         Animation anim = new Animation();
+        Caff caff;
         try {
-            Caff caff = caffUtil.parse(file.getBytes());
-
+            caff = caffUtil.parse(file.getBytes());
+        } catch (IOException | InterruptedException | CaffUtilException e) {
+            log.error("Saving new animation failed at parse: {}", e);
+            throw new CaffplaccException("FILE_PARSE_FAILED");
+        }
+        try {
             UUID userId = getUserToken();
             User user = userRepository.getById(userId);
 
@@ -244,8 +249,9 @@ public class AnimationService {
 
             log.info("Successfully created new animation entity with Id: {}", anim.getId());
             return anim;
-        } catch (IOException | InterruptedException | NoSuchAlgorithmException | CaffUtilException e) {
-            throw new CaffplaccException("FILE_UPLOAD_FAILED");
+        } catch (IOException | NoSuchAlgorithmException e) {
+            log.error("Saving new animation failed at upload: {}", e);
+            throw new RuntimeException(e);
         }
     }
 
