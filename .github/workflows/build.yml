@@ -27,11 +27,11 @@ jobs:
           cd /tmp/
           git clone https://github.com/levendula-szgbizt-2021/ciff
           cd ciff/
-          make && sudo make install-noman
+          make && sudo make PREFIX=/usr install-noman
           cd ../
           git clone https://github.com/levendula-szgbizt-2021/caff
           cd caff/
-          make && sudo make install-noman
+          make && sudo make PREFIX=/usr install-noman
       - name: Cache SonarQube packages
         uses: actions/cache@v1
         with:
