@@ -18,6 +18,7 @@ jobs:
           java-version: 11
       - name: Install caff and ciff libraries
         env:
+          CFLAGS: -I/usr/include/ImageMagick
           PREFIX: /usr
         run: |
           sudo apt update
