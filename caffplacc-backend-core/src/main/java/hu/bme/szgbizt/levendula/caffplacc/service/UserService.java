@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -113,6 +114,7 @@ public class UserService {
         return userRepository.findByUsername(userName).orElseThrow(() -> new EntityNotFoundException(User.class.getName())).getId();
     }
 
+    @Transactional
     public void deleteUserData() {
         var userId = getUserToken();
         log.info("Deleting user data for userId: {}", userId);
@@ -120,6 +122,7 @@ public class UserService {
         log.info("Deleted user data for userId: {}", userId);
     }
 
+    @Transactional
     public void deleteUserByAdmin(UUID userId) {
         log.info("Deleting user from admin account with userId: {}", userId);
         deleteUser(userId);
