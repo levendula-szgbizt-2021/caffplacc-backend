@@ -111,7 +111,13 @@ public class AnimationService {
     }
 
     public AnimationResponse updateAnimation(UUID id, AnimationUpdateRequest request) {
-        var animation = findAnimationByIdAndUserId(id, getUserToken());
+        Animation animation = null;
+        if(isAdministrator()) {
+            animation = findAnimationById(id);
+        }
+        else {
+            animation = findAnimationByIdAndUserId(id, getUserToken());
+        }
         animation.setTitle(request.getTitle());
         return mapper.map(animationRepository.save(animation));
     }
@@ -122,7 +128,7 @@ public class AnimationService {
         log.info("Deleting animation for userId: {}, animationId: {}", userId, id);
 
         var animation = findAnimationById(id);
-        if (animation.getUserId().equals(userId)) {
+        if (animation.getUserId().equals(userId) || isAdministrator()) {
             commentRepository.deleteAllByAnimationId(id);
             animationRepository.deleteById(id);
             String fileName = id + ".caff";
